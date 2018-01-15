@@ -1,0 +1,147 @@
+\documentclass[a4paper]{report}
+
+\usepackage{listings}
+\usepackage{color}
+\usepackage[table]{xcolor}
+\usepackage{url}
+\usepackage{newfloat}
+\usepackage{todonotes}
+% pdfborderstyle to fix the bounding rectangle
+\usepackage[pdftex,hidelinks]{hyperref}
+% \usepackage[pdftex, pdfborderstyle={/S/U/W 0}]{hyperref}
+\usepackage[a4paper,left=4cm,right=4cm,top=3cm,bottom=3cm]{geometry}
+\usepackage{emptypage}
+\usepackage[page]{appendix}
+
+% For adjusting the spacing between chapters in the TOC
+\usepackage{tocloft}
+\renewcommand\cftbeforechapskip{3pt}
+
+%\usepackage[hyperref=true,
+%			isbn=false,
+%			doi=true,
+%			url=false,
+%			style=alphabetic,
+%			urldate=long,
+%			urldate=iso8601,
+%			natbib=true]{biblatex}
+%\addbibresource{thesis.bib}
+
+\usepackage{tikz}
+\usetikzlibrary{arrows, decorations.text}
+
+\usepackage{subcaption}
+\usepackage{multicol}
+
+\usepackage{pdfpages}
+
+% -------------------------------------------------------------
+% Chapter Title
+% -------------------------------------------------------------
+\usepackage[grey]{quotchap}
+\renewcommand*{\chapterheadstartvskip}{\vspace{1cm}}
+%  Adding lines below the chapter head
+\newcommand*{\ORIGchapterheadendvskip}{}%
+\let\ORIGchapterheadendvskip=\chapterheadendvskip
+\renewcommand*{\chapterheadendvskip}{%
+  {%
+    \setlength{\parskip}{0pt}%
+    \noindent\rule[.3\baselineskip]{\linewidth}{1pt}\par
+  }%
+  \ORIGchapterheadendvskip
+}
+
+% -------------------------------------------------------------
+%  Custom Macros
+% -------------------------------------------------------------
+\newcommand{\icode}[1]{\mbox{\texttt{{#1}}}}
+
+% -------------------------------------------------------------
+%  Source Code
+% -------------------------------------------------------------
+\newcommand{\cppfile}[1]{\lstinputlisting[
+		basicstyle=\footnotesize,
+		breaklines=true,
+		language=C++,
+		tabsize=2,
+		commentstyle=\color{gray},
+		keywordstyle=\color{blue},
+		stringstyle=\color{red}
+	]{#1}}
+
+\lstnewenvironment{cppcode}
+    {
+		\lstset{
+			basicstyle=\footnotesize,
+			breakatwhitespace=true,
+			breaklines=true,
+			language=C++,
+			tabsize=4,
+			numbers=left,
+			numberstyle=\tiny\color{gray},
+			commentstyle=\color{gray},
+			keywordstyle=\color{blue},
+			stringstyle=\color{red},
+			xleftmargin=20pt,
+			escapeinside={{*@}{@*}}
+		}
+	}
+	{}
+
+\DeclareFloatingEnvironment[fileext=frm,placement={tb},name=Listing]{codefigure}
+% \captionsetup[myfloat]{labelfont=bf}
+
+% -------------------------------------------------------------
+
+
+\title{Correctly Synchronised POSIX-threads Benchmark Applications}
+\author{Christos Sakalis}
+\date{June 2015}
+
+\begin{document}
+
+
+\includepdf[pages={1}]{frontpageAndAbstract/frontpageAndAbstract.pdf}
+\null
+\cleardoublepage
+\includepdf[pages={2}]{frontpageAndAbstract/frontpageAndAbstract.pdf}
+
+\null
+\cleardoublepage
+\input{sammanfattning}
+\input{acknowledgement}
+
+\pagestyle{plain}
+\pagenumbering{roman}
+
+\tableofcontents
+
+\null
+\cleardoublepage
+
+\pagenumbering{arabic}
+
+\input{introduction.tex}
+
+\input{background.tex}
+
+\input{applications.tex}
+
+\input{results.tex}
+
+\input{conclusions.tex}
+
+\clearpage
+%\printbibliography[heading=bibintoc]
+\bibliographystyle{abbrv}
+\bibliography{thesis}
+\begin{appendices}
+	\input{appendix.tex}
+	% \listoffigures
+	% \listoftables
+\end{appendices}
+
+
+
+\end{document}
+
