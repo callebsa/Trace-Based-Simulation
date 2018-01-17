@@ -1,2 +1,4 @@
 w 3
-Mon: Setup a report skeleton.
+Mon: Setup a report skeleton. Went thought pin and learned how it work and the basics in writing a ping application. Installed the sniper frame-were and begin to play around with it following the manual. 
+Tue: Continue to play around with sniper and examen the output and running configurations. I was looking for the CPU instructions trace and found some SIFT files with binary content that later, after asking Alberto, turned out to not be what I was looking after.
+Wed: Found the CPU trace! 
