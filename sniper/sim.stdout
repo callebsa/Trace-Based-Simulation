@@ -1,0 +1,62 @@
+[SNIPER] Start
+[DEPTRACE] Enabling trace generation via RMS function
+[SNIPER] --------------------------------------------------------------------------------
+[SNIPER] Sniper using Pin frontend
+[SNIPER] Running full application in DETAILED mode
+[SNIPER] --------------------------------------------------------------------------------
+[SNIPER] Enabling performance models
+[SNIPER] Setting instrumentation mode to DETAILED
+[DEPTRACE:1:1] RMS: Enabling trace generation after 2186 instructions / 2417 micro-ops
+[DEPTRACE:2:2] RMS: Enabling trace generation after 203 instructions / 235 micro-ops
+[DEPTRACE:3:3] RMS: Enabling trace generation after 203 instructions / 235 micro-ops
+[DEPTRACE:4:4] RMS: Enabling trace generation after 203 instructions / 235 micro-ops
+[DEPTRACE:5:5] RMS: Enabling trace generation after 203 instructions / 235 micro-ops
+[DEPTRACE:6:6] RMS: Enabling trace generation after 203 instructions / 235 micro-ops
+[DEPTRACE:7:7] RMS: Enabling trace generation after 203 instructions / 235 micro-ops
+[DEPTRACE:0:0] RMS: Enabling trace generation after 25897310 instructions / 28713110 micro-ops
+[DEPTRACE:1:1] RMS: Clear stats command seen at 107863 instructions / 149771 micro-ops
+[DEPTRACE:2:2] RMS: Disabling trace generation after 3689016 instructions / 3731315 micro-ops
+[DEPTRACE:6:6] RMS: Disabling trace generation after 3689138 instructions / 3731458 micro-ops
+[DEPTRACE:4:4] RMS: Disabling trace generation after 3689078 instructions / 3731381 micro-ops
+[DEPTRACE:5:5] RMS: Disabling trace generation after 3689053 instructions / 3731358 micro-ops
+[DEPTRACE:3:3] RMS: Disabling trace generation after 3689259 instructions / 3731596 micro-ops
+[DEPTRACE:7:7] RMS: Disabling trace generation after 3689029 instructions / 3731328 micro-ops
+[DEPTRACE:1:1] RMS: Disabling trace generation after 3691792 instructions / 3734387 micro-ops
+[DEPTRACE:0:0] RMS: Disabling trace generation after 29586039 instructions / 32444152 micro-ops
+
+FFT with Blocking Transpose
+65536 Complex Doubles
+8 Processors
+65536 Cache lines
+16 Byte line size
+4096 Bytes per page
+
+==> created thread 1
+==> created thread 2
+==> created thread 3
+==> created thread 4
+==> created thread 5
+==> created thread 6
+==> created thread 7
+
+PROCESS STATISTICS
+Computation Transpose Transpose
+Proc Time Time Fraction
+0 73 5 0.06849
+
+TIMING INFORMATION
+Start time : 1516618150
+Initialization finish time : 1516618276
+Overall finish time : 1516618349
+Total time with initialization : 199
+Total time without initialization : 73
+Overall transpose time : 5
+Overall transpose fraction : 0.06849
+
+[SNIPER] Disabling performance models
+[SNIPER] Leaving ROI after 202.74 seconds
+[SNIPER] Simulated 55.5M instructions, 17137.0M cycles, 0.00 IPC
+[SNIPER] Simulation speed 273.5 KIPS (34.2 KIPS / target core - 29250.8ns/instr)
+[SNIPER] Setting instrumentation mode to FAST_FORWARD
+[SNIPER] End
+[SNIPER] Elapsed time: 202.96 seconds
