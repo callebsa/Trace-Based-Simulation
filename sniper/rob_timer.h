@@ -66,12 +66,11 @@ private:
    bool deptrace_roi;
    bool deptrace_microops;
    bool deptrace_roi_seen = false;
-   bool firstLine = true;
+   bool deptrace_first_line = true;
    std::unique_ptr<std::ostream> _deptrace_f;
    std::unique_ptr<std::ostream> _deptrace_insn_f;
    uint64_t deptrace_last_insn = 0;
    uint64_t deptrace_insn_count = 0;
-   uint64_t deptrace_last_insns = 0;
    bool deptrace_is_load = false;
    uint64_t deptrace_load_addr = 0x0;
    uint64_t deptrace_load_size = 0x0;
@@ -88,6 +87,7 @@ private:
    bool deptrace_seen_end_tran = false;
    uint64_t deptrace_last_command = 0;
    std::unordered_set<uint64_t> deptrace_acquire_list;
+   uint64_t deptrace_last_pc = 0;
 
    void deptrace_roi_begin();
    void deptrace_roi_end();
@@ -198,6 +198,8 @@ private:
    void deptraceSetActive(thread_id_t thread_id, bool is_active = true);
    bool deptraceRMSIsActive(thread_id_t thread_id);
    void deptraceRMSSetActive(thread_id_t thread_id, bool is_active = true);
+
+   std::string getPCDiff(std::vector<DynamicMicroOp*>::const_iterator it);
 
    static Lock m_print_lock;
 

@@ -17,9 +17,10 @@
 #include "thread.h"
 #include "hooks_manager.h"
 
+#include <iostream>
+#include <sstream>
 #include <iomanip>
-#include <stdio.h>
-#include <stdlib.h>
+
 // Define to get per-cycle printout of dispatch, issue, writeback stages
 //#define DEBUG_PERCYCLE
 
@@ -29,10 +30,6 @@
 #define DEBUG_DEPTRACE 0
 
 Lock RobTimer::m_print_lock;
-
-
-
-int pc =0;
 
 RobTimer::RobTimer(
          Core *core, PerformanceModel *_perf, const CoreModel *core_model,
@@ -329,7 +326,7 @@ RobTimer::~RobTimer()
          (*_deptrace_f) << "\n";
 
       if (!deptrace_seen_end_tran) {
-         (*_deptrace_f) << "0 E\n" << std::flush;
+         (*_deptrace_f) << "E\n" << std::flush;
          deptrace_seen_end_tran = true;
       }
       for (auto &i : deptrace_active)
@@ -411,12 +408,10 @@ RobTimer::RobEntry *RobTimer::findEntryBySequenceNumber(UInt64 sequenceNumber)
    return entry;
 }
 
-std::string getPC(std::vector<DynamicMicroOp*>::const_iterator it){
-   int ans = (*it)->getInstructionNumber() - pc;
-   pc =  (*it)->getInstructionNumber();
-   if (ans == 0){
-      return "";
-   }
+std::string RobTimer::getPCDiff(std::vector<DynamicMicroOp*>::const_iterator it)
+{
+   uint64_t ans = (*it)->getInstructionNumber() - deptrace_last_pc;
+   deptrace_last_pc = (*it)->getInstructionNumber();
    return std::to_string(ans);
 }
 
@@ -425,6 +420,7 @@ boost::tuple<uint64_t,SubsecondTime> RobTimer::simulate(const std::vector<Dynami
    uint64_t totalInsnExec = 0;
    SubsecondTime totalLat = SubsecondTime::Zero();
    std::ostream& deptrace_f = *_deptrace_f;
+
    Thread* thread = Sim()->getThreadManager()->getThreadOnCore(m_core->getId());
    thread_id_t thread_id = thread ? thread->getId() : 0xffffffff;
 
@@ -435,6 +431,7 @@ boost::tuple<uint64_t,SubsecondTime> RobTimer::simulate(const std::vector<Dynami
          delete *it;
          continue;
       }
+
       RobEntry *entry = &this->rob.next();
       entry->init(*it, nextSequenceNumber++, nextInstructionNumber);
       if ((*it)->isLast())
@@ -522,10 +519,9 @@ boost::tuple<uint64_t,SubsecondTime> RobTimer::simulate(const std::vector<Dynami
 
       this->memoryDependencies->setDependencies(*entry->uop, lowestValidSequenceNumber);
 
-      // Trace format:
-      // 2 BD2D3 3 LD6 0x400 8
-      // 4 SD2 0x600 8
-
+      // Trace format: size. d=dependence. t=target address
+      // 2 3d1 b2d2t-120* L5d1 fff0 4
+      
       if (deptraceIsActive(thread_id))
       {
       // Collects whether we are a load/store/branch over time
@@ -552,69 +548,38 @@ boost::tuple<uint64_t,SubsecondTime> RobTimer::simulate(const std::vector<Dynami
       // If we are looking for microops (deptrace_microops), then we handle this for each microop
       if ((*it)->isLast() || deptrace_microops)
       {
+	 if (deptrace_first_line) {
+	   deptrace_last_pc = (*it)->getInstructionNumber();
+	   deptrace_f << std::hex << deptrace_last_pc << std::dec << "\n"; 
+	   deptrace_first_line = false;
+	 }
+
          // In the case that we are an instruction we care about, save the entry
          if (deptrace_is_branch || deptrace_is_load || deptrace_is_store || (deptrace_reg_deps.size()!=0) || (deptrace_mem_deps.size()!=0) || (deptrace_addr_deps.size()!=0))
          {
-         //deptrace_f << "DEBUG_DEPTRACE " << firstLine << "\n";
-         if(firstLine){
-         pc = (*it)->getInstructionNumber();
-         deptrace_f << pc << "\n"; 
-         firstLine = false;
-      }
-            if (true /*deptrace_last_insns*/ && deptrace_is_load)
-            {
-               if (deptrace_last_insns != 0)
-               {
-                  if (deptrace_last_was_newline)
-                     deptrace_last_was_newline = false;
-                  else
-                     deptrace_f << " ";
-
-                  deptrace_f << deptrace_last_insns;
-                  deptrace_last_insns = 0;
-               }
-               // No newlines for normal instructions
-            }
-
             if (deptrace_is_load)
             {
                if (deptrace_last_was_newline)
                   deptrace_last_was_newline = false;
                else
                   deptrace_f << " ";
-               deptrace_f << "L" << getPC(it);
+               deptrace_f << "L" << getPCDiff(it);
 #if DEBUG_DEPTRACE >= 1
-               deptrace_f << "(" << (*it)->getInstructionNumber() << ")";
+               deptrace_f << "(" << std::hex << (*it)->getInstructionNumber() << std::dec << ")";
 #endif
                for (auto rdep : deptrace_reg_deps)
                {
-                  deptrace_f <<getPC(it) << "d" << rdep;
+                  deptrace_f << "d" << rdep;
                }
                for (auto mdep : deptrace_mem_deps)
                {
                   deptrace_f << "D" << mdep;
                }
                assert(deptrace_addr_deps.size() == 0);
-
                deptrace_f << " " << std::hex << deptrace_load_addr << std::dec;
                deptrace_f << " " << deptrace_load_size << "\n";
                deptrace_load_addr = 0x0;
                deptrace_last_was_newline = true;
-            }
-
-            if (true /*deptrace_last_insns*/ && deptrace_is_branch)
-            {
-               if (deptrace_last_insns != 0)
-               {
-                  if (deptrace_last_was_newline)
-                     deptrace_last_was_newline = false;
-                  else
-                     deptrace_f << " ";
-
-                  deptrace_f << deptrace_last_insns;
-                  deptrace_last_insns = 0;
-               }
-               // No newlines for normal instructions
             }
 
             if (deptrace_is_branch)
@@ -623,13 +588,13 @@ boost::tuple<uint64_t,SubsecondTime> RobTimer::simulate(const std::vector<Dynami
                   deptrace_last_was_newline = false;
                else
                   deptrace_f << " ";
-               deptrace_f << "b" << getPC(it);
+               deptrace_f << "b" << getPCDiff(it);
 #if DEBUG_DEPTRACE >= 1
-               deptrace_f << "(" << (*it)->getInstructionNumber() << ")";
+               deptrace_f << "(" << std::hex << (*it)->getInstructionNumber() << std::dec << ")";
 #endif
                for (auto rdep : deptrace_reg_deps)
                {
-                  deptrace_f <<getPC(it) << "d" << rdep;
+                  deptrace_f << "d" << rdep;
                }
                for (auto mdep : deptrace_mem_deps)
                {
@@ -637,41 +602,27 @@ boost::tuple<uint64_t,SubsecondTime> RobTimer::simulate(const std::vector<Dynami
                }
                assert(deptrace_addr_deps.size() == 0);
                // No newlines for branches
-                   DynamicMicroOp &dmo = *entry->uop;
-                deptrace_f << "t" <<std::hex<< dmo.getBranchTarget();
-                if(dmo.isBranchTaken()){
-                deptrace_f << "*";
-             }
+	       DynamicMicroOp &dmo = *entry->uop;
+	       deptrace_f << "t" << (deptrace_last_pc - dmo.getBranchTarget());
+	       if (dmo.isBranchTaken()) {
+		  deptrace_f << "*";
+	       }
             }
 
             // For non-branch, non load, non-store instructions with dependencies
-            if (true /*deptrace_last_insns*/ && (!deptrace_is_branch && !deptrace_is_load && !deptrace_is_store))
-            {
-               if (deptrace_last_insns != 0)
-               {
-                  if (deptrace_last_was_newline)
-                     deptrace_last_was_newline = false;
-                  else
-                     deptrace_f << " ";
-
-                  deptrace_f << deptrace_last_insns;
-                  deptrace_last_insns = 0;
-               }
-               // No newlines for normal instructions
-            }
-
             if (!deptrace_is_branch && !deptrace_is_load && !deptrace_is_store)
             {
                if (deptrace_last_was_newline)
                   deptrace_last_was_newline = false;
                else
-                  deptrace_f << " " << getPC(it);
+                  deptrace_f << " ";
+               deptrace_f << getPCDiff(it);
 #if DEBUG_DEPTRACE >= 1
-               deptrace_f << "(" << (*it)->getInstructionNumber() << ")";
+               deptrace_f << "(" << std::hex << (*it)->getInstructionNumber() << std::dec << ")";
 #endif
                for (auto rdep : deptrace_reg_deps)
                {
-                  deptrace_f <<getPC(it) << "d" << rdep;
+                  deptrace_f << "d" << rdep;
                }
                for (auto mdep : deptrace_mem_deps)
                {
@@ -681,39 +632,19 @@ boost::tuple<uint64_t,SubsecondTime> RobTimer::simulate(const std::vector<Dynami
                // No newlines for instructions with dependencies
             }
 
-            if (true /*deptrace_last_insns*/ && deptrace_is_store)
-            {
-               if (deptrace_last_insns != 0)
-               {
-                  if (deptrace_last_was_newline)
-                     deptrace_last_was_newline = false;
-                  else
-                     deptrace_f << " ";
-
-                  deptrace_f << deptrace_last_insns;
-                  deptrace_last_insns = 0;
-               }
-               // No newlines for normal instructions
-            }
-
             if (deptrace_is_store)
             {
-      
-
                if (deptrace_last_was_newline)
                   deptrace_last_was_newline = false;
                else
                   deptrace_f << " ";
-
-            
-      
-               deptrace_f << "S" << getPC(it);
+               deptrace_f << "S" << getPCDiff(it);
 #if DEBUG_DEPTRACE >= 1
-               deptrace_f << "(" << (*it)->getInstructionNumber() << ")";
+               deptrace_f << "(" << std::hex << (*it)->getInstructionNumber() << std::dec << ")";
 #endif
                for (auto rdep : deptrace_reg_deps)
                {
-                  deptrace_f << getPC(it) << "d" << rdep;
+                  deptrace_f << "d" << rdep;
                }
                for (auto mdep : deptrace_mem_deps)
                {
@@ -732,8 +663,12 @@ boost::tuple<uint64_t,SubsecondTime> RobTimer::simulate(const std::vector<Dynami
          }
          else
          {
-               // If we aren't a special instruction, keep track of the count
-               ++deptrace_last_insns;
+	    // If we aren't a special instruction, just print the size (pc diff)
+	    if (deptrace_last_was_newline)
+	       deptrace_last_was_newline = false;
+	    else
+	       deptrace_f << " ";
+	    deptrace_f << getPCDiff(it);
          }
 
          // Clear per-instruction data structures
@@ -771,13 +706,9 @@ boost::tuple<uint64_t,SubsecondTime> RobTimer::simulate(const std::vector<Dynami
                if (deptrace_last_was_newline)
                   deptrace_last_was_newline = false;
                else
-                  deptrace_f << " \n";
-               // Skip as we need to end with "0 C"
-               //deptrace_f << deptrace_last_insns;
-               //deptrace_last_insns = 0;
-               // No newlines for normal instructions
-
-               deptrace_f << "0 C\n";
+                  deptrace_f << "\n";
+	       
+               deptrace_f << "C\n";
                deptrace_last_was_newline = true;
 
                {
@@ -791,19 +722,12 @@ boost::tuple<uint64_t,SubsecondTime> RobTimer::simulate(const std::vector<Dynami
          case 2:
             if (!deptrace_roi)
             {
-	       if (true /*deptrace_last_insns*/)
-	       {
-		  if (deptrace_last_was_newline)
-		     deptrace_last_was_newline = false;
-		  else
-		     deptrace_f << "\n";
-		  // Skip as we need to end with "0 E"
-		  //deptrace_f << deptrace_last_insns;
-		  //deptrace_last_insns = 0;
-		  // No newlines for normal instructions
-	       }
-
-	       deptrace_f << "0 E\n" << std::flush;
+	       if (deptrace_last_was_newline)
+		  deptrace_last_was_newline = false;
+	       else
+		  deptrace_f << "\n";
+		  
+	       deptrace_f << "E\n" << std::flush;
 	       deptrace_last_was_newline = true;
                deptrace_seen_end_tran = true;
 
@@ -832,11 +756,8 @@ boost::tuple<uint64_t,SubsecondTime> RobTimer::simulate(const std::vector<Dynami
                   deptrace_last_was_newline = false;
                else
                   deptrace_f << " ";
-               deptrace_f << deptrace_last_insns;
-               deptrace_last_insns = 0;
-               // No newlines for normal instructions
-
-               deptrace_f << " A " << std::hex << deptrace_save_data[0] << " " << deptrace_save_data[1] << " " << deptrace_save_data[2] << std::dec << "\n";
+               
+               deptrace_f << "A " << std::hex << deptrace_save_data[0] << " " << deptrace_save_data[1] << " " << deptrace_save_data[2] << std::dec << "\n";
                deptrace_last_was_newline = true;
             }
 
@@ -860,11 +781,8 @@ boost::tuple<uint64_t,SubsecondTime> RobTimer::simulate(const std::vector<Dynami
                   deptrace_last_was_newline = false;
                else
                   deptrace_f << " ";
-               deptrace_f << deptrace_last_insns;
-               deptrace_last_insns = 0;
-               // No newlines for normal instructions
-
-               deptrace_f << " R " << std::hex << (*it)->getMicroOp()->trace_data[1] << " " << (*it)->getMicroOp()->trace_data[2] << " " << thread_id << std::dec << "\n";
+               
+               deptrace_f << "R " << std::hex << (*it)->getMicroOp()->trace_data[1] << " " << (*it)->getMicroOp()->trace_data[2] << " " << thread_id << std::dec << "\n";
                deptrace_last_was_newline = true;
             }
 
@@ -883,11 +801,8 @@ boost::tuple<uint64_t,SubsecondTime> RobTimer::simulate(const std::vector<Dynami
                   deptrace_last_was_newline = false;
                else
                   deptrace_f << " ";
-               deptrace_f << deptrace_last_insns;
-               deptrace_last_insns = 0;
-               // No newlines for normal instructions
-
-               deptrace_f << " B " << std::hex << (*it)->getMicroOp()->trace_data[1] << " " << (*it)->getMicroOp()->trace_data[2] << " " << (*it)->getMicroOp()->trace_data[3] << " " << thread_id << "\n" << std::dec;
+               
+               deptrace_f << "B " << std::hex << (*it)->getMicroOp()->trace_data[1] << " " << (*it)->getMicroOp()->trace_data[2] << " " << (*it)->getMicroOp()->trace_data[3] << " " << thread_id << "\n" << std::dec;
                deptrace_last_was_newline = true;
             }
 
@@ -906,11 +821,8 @@ boost::tuple<uint64_t,SubsecondTime> RobTimer::simulate(const std::vector<Dynami
                   deptrace_last_was_newline = false;
                else
                   deptrace_f << " ";
-               deptrace_f << deptrace_last_insns;
-               deptrace_last_insns = 0;
-               // No newlines for normal instructions
-
-               deptrace_f << " X " << std::hex << (*it)->getMicroOp()->trace_data[1] << " " << (*it)->getMicroOp()->trace_data[2] << " " << (*it)->getMicroOp()->trace_data[3] << " " << thread_id << "\n" << std::dec;
+               
+               deptrace_f << "X " << std::hex << (*it)->getMicroOp()->trace_data[1] << " " << (*it)->getMicroOp()->trace_data[2] << " " << (*it)->getMicroOp()->trace_data[3] << " " << thread_id << "\n" << std::dec;
                deptrace_last_was_newline = true;
             }
 
@@ -924,11 +836,8 @@ boost::tuple<uint64_t,SubsecondTime> RobTimer::simulate(const std::vector<Dynami
                   deptrace_last_was_newline = false;
                else
                   deptrace_f << " ";
-               deptrace_f << deptrace_last_insns;
-               deptrace_last_insns = 0;
-               // No newlines for normal instructions
-
-               deptrace_f << " Y " << std::hex << (*it)->getMicroOp()->trace_data[1] << " " << (*it)->getMicroOp()->trace_data[2] << " " << (*it)->getMicroOp()->trace_data[3] << " " << thread_id << "\n" << std::dec;
+               
+               deptrace_f << "Y " << std::hex << (*it)->getMicroOp()->trace_data[1] << " " << (*it)->getMicroOp()->trace_data[2] << " " << (*it)->getMicroOp()->trace_data[3] << " " << thread_id << "\n" << std::dec;
                deptrace_last_was_newline = true;
             }
 
@@ -942,11 +851,8 @@ boost::tuple<uint64_t,SubsecondTime> RobTimer::simulate(const std::vector<Dynami
                   deptrace_last_was_newline = false;
                else
                   deptrace_f << " ";
-               deptrace_f << deptrace_last_insns;
-               deptrace_last_insns = 0;
-               // No newlines for normal instructions
-
-               deptrace_f << " Z " << std::hex << (*it)->getMicroOp()->trace_data[1] << " " << (*it)->getMicroOp()->trace_data[2] << " " << (*it)->getMicroOp()->trace_data[3] << " " << thread_id << "\n" << std::dec;
+               
+               deptrace_f << "Z " << std::hex << (*it)->getMicroOp()->trace_data[1] << " " << (*it)->getMicroOp()->trace_data[2] << " " << (*it)->getMicroOp()->trace_data[3] << " " << thread_id << "\n" << std::dec;
                deptrace_last_was_newline = true;
             }
 
@@ -965,11 +871,8 @@ boost::tuple<uint64_t,SubsecondTime> RobTimer::simulate(const std::vector<Dynami
                   deptrace_last_was_newline = false;
                else
                   deptrace_f << " ";
-               deptrace_f << deptrace_last_insns;
-               deptrace_last_insns = 0;
-               // No newlines for normal instructions
-
-               deptrace_f << " T " << std::hex << (*it)->getMicroOp()->trace_data[1] << " " << thread_id << "\n" << std::dec;
+               
+               deptrace_f << "T " << std::hex << (*it)->getMicroOp()->trace_data[1] << " " << thread_id << "\n" << std::dec;
                deptrace_last_was_newline = true;
             }
 
@@ -989,11 +892,8 @@ boost::tuple<uint64_t,SubsecondTime> RobTimer::simulate(const std::vector<Dynami
                   deptrace_last_was_newline = false;
                else
                   deptrace_f << " ";
-               deptrace_f << deptrace_last_insns;
-               deptrace_last_insns = 0;
-               // No newlines for normal instructions
-
-               deptrace_f << " U " << std::hex << (*it)->getMicroOp()->trace_data[1] << " " << thread_id << "\n" << std::dec;
+               
+               deptrace_f << "U " << std::hex << (*it)->getMicroOp()->trace_data[1] << " " << thread_id << "\n" << std::dec;
                deptrace_last_was_newline = true;
             }
 
@@ -1018,13 +918,10 @@ boost::tuple<uint64_t,SubsecondTime> RobTimer::simulate(const std::vector<Dynami
                   deptrace_last_was_newline = false;
                else
                   deptrace_f << " ";
-               deptrace_f << deptrace_last_insns;
-               deptrace_last_insns = 0;
-               // No newlines for normal instructions
-
-               deptrace_f << " V " << std::hex << (*it)->getMicroOp()->trace_data[1] << " " << (*it)->getMicroOp()->trace_data[2] << " " << thread_id << "\n" << std::dec;
+               
+               deptrace_f << "V " << std::hex << (*it)->getMicroOp()->trace_data[1] << " " << (*it)->getMicroOp()->trace_data[2] << " " << thread_id << "\n" << std::dec;
                // For V, we need to explicitly release the lock
-               deptrace_f << "0 R " << std::hex << (*it)->getMicroOp()->trace_data[2] << " 0 " << thread_id << "\n" << std::dec;
+               deptrace_f << "R " << std::hex << (*it)->getMicroOp()->trace_data[2] << " 0 " << thread_id << "\n" << std::dec;
                deptrace_last_was_newline = true;
             }
 
@@ -1048,7 +945,7 @@ boost::tuple<uint64_t,SubsecondTime> RobTimer::simulate(const std::vector<Dynami
             if (deptraceIsActive(thread_id))
             {
                // For V, we need to explicitly acquire the lock
-               deptrace_f << "0 A " << std::hex << deptrace_thread_released[thread_id] << " 0 " << thread_id << "\n" << std::dec;
+               deptrace_f << "A " << std::hex << deptrace_thread_released[thread_id] << " 0 " << thread_id << "\n" << std::dec;
                deptrace_last_was_newline = true;            
             }
 
