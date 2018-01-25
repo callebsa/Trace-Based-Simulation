@@ -571,7 +571,7 @@ boost::tuple<uint64_t,SubsecondTime> RobTimer::simulate(const std::vector<Dynami
                deptrace_f << "L" << getPCDiff();
                
 #if DEBUG_DEPTRACE >= 1
-               deptrace_f << "(" << std::hex << (*it)->getInstructionNumber() << std::dec << ")";
+               deptrace_f << "(" << std::hex << dmo.getMicroOp()->getInstruction()->getAddress() << std::dec << ")";
 #endif
                for (auto rdep : deptrace_reg_deps)
                {
@@ -594,12 +594,10 @@ boost::tuple<uint64_t,SubsecondTime> RobTimer::simulate(const std::vector<Dynami
                   deptrace_last_was_newline = false;
                else
                   deptrace_f << " ";
-              
-         
-               deptrace_f << "b" << getPCDiff();
+	       deptrace_f << "b" << getPCDiff();
 
 #if DEBUG_DEPTRACE >= 1
-               deptrace_f << "(" << std::hex << (*it)->getInstructionNumber() << std::dec << ")";
+               deptrace_f << "(" << std::hex << dmo.getMicroOp()->getInstruction()->getAddress() << std::dec << ")";
 #endif
                for (auto rdep : deptrace_reg_deps)
                {
@@ -624,13 +622,11 @@ boost::tuple<uint64_t,SubsecondTime> RobTimer::simulate(const std::vector<Dynami
                if (deptrace_last_was_newline)
                   deptrace_last_was_newline = false;
                else
-                  deptrace_f << " ";
-              
-
+                  deptrace_f << " ";	       
                deptrace_f << getPCDiff();
                
 #if DEBUG_DEPTRACE >= 1
-               deptrace_f << "(" << std::hex << (*it)->getInstructionNumber() << std::dec << ")";
+               deptrace_f << "(" << std::hex << dmo.getMicroOp()->getInstruction()->getAddress() << std::dec << ")";
 #endif
                for (auto rdep : deptrace_reg_deps)
                {
@@ -650,10 +646,10 @@ boost::tuple<uint64_t,SubsecondTime> RobTimer::simulate(const std::vector<Dynami
                   deptrace_last_was_newline = false;
                else
                   deptrace_f << " ";
-               
                deptrace_f << "S" << getPCDiff();
+
 #if DEBUG_DEPTRACE >= 1
-               deptrace_f << "(" << std::hex << (*it)->getInstructionNumber() << std::dec << ")";
+               deptrace_f << "(" << std::hex << dmo.getMicroOp()->getInstruction()->getAddress() << std::dec << ")";
 #endif
                for (auto rdep : deptrace_reg_deps)
                {
