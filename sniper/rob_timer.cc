@@ -411,8 +411,8 @@ RobTimer::RobEntry *RobTimer::findEntryBySequenceNumber(UInt64 sequenceNumber)
 std::string RobTimer::getPCDiff()
 {
    DynamicMicroOp &dmo = *entry->uop;
-   uint64_t ans = dmo.getMicroOp()->getInstruction()->getAddress() - deptrace_last_pc;
-  deptrace_last_pc = dmo.getMicroOp()->getInstruction()->getAddress() ;
+   long long ans = dmo.getMicroOp()->getInstruction()->getAddress() - deptrace_last_pc;
+   deptrace_last_pc = dmo.getMicroOp()->getInstruction()->getAddress();
    return std::to_string(ans);
 }
 
@@ -550,14 +550,15 @@ boost::tuple<uint64_t,SubsecondTime> RobTimer::simulate(const std::vector<Dynami
       // If we are looking for microops (deptrace_microops), then we handle this for each microop
       if ((*it)->isLast() || deptrace_microops)
       {
-    if (deptrace_first_line) {
-       DynamicMicroOp &dmo = *entry->uop;
-      deptrace_last_pc = dmo.getMicroOp()->getInstruction()->getAddress();
-      deptrace_f << std::hex << deptrace_last_pc << std::dec << "\n"; 
-      deptrace_first_line = false;
-    }
-    DynamicMicroOp &dmo = *entry->uop;
-         // In the case that we are an instruction we care about, save the entry
+	 DynamicMicroOp &dmo = *entry->uop;
+         
+	 if (deptrace_first_line) {
+	    deptrace_last_pc = dmo.getMicroOp()->getInstruction()->getAddress();
+	    deptrace_f << std::hex << deptrace_last_pc << std::dec << "\n"; 
+	    deptrace_first_line = false;
+	 }
+	 
+	 // In the case that we are an instruction we care about, save the entry
          if (deptrace_is_branch || deptrace_is_load || deptrace_is_store || (deptrace_reg_deps.size()!=0) || (deptrace_mem_deps.size()!=0) || (deptrace_addr_deps.size()!=0))
          {
 
