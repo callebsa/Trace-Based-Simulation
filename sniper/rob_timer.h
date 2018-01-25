@@ -19,6 +19,8 @@
 
 class RobTimer
 {
+      std::string getPCDiff();
+
 private:
    class RobEntry
    {
@@ -66,11 +68,11 @@ private:
    bool deptrace_roi;
    bool deptrace_microops;
    bool deptrace_roi_seen = false;
-   bool deptrace_first_line = true;
    std::unique_ptr<std::ostream> _deptrace_f;
    std::unique_ptr<std::ostream> _deptrace_insn_f;
    uint64_t deptrace_last_insn = 0;
    uint64_t deptrace_insn_count = 0;
+   uint64_t deptrace_last_insns = 0;
    bool deptrace_is_load = false;
    uint64_t deptrace_load_addr = 0x0;
    uint64_t deptrace_load_size = 0x0;
@@ -86,11 +88,14 @@ private:
    std::unordered_map<uint64_t,uint64_t> deptrace_thread_released; // threadid -> mutex released
    bool deptrace_seen_end_tran = false;
    uint64_t deptrace_last_command = 0;
+   uint64_t deptrace_last_pc = 0;
+   bool deptrace_first_line = true;
    std::unordered_set<uint64_t> deptrace_acquire_list;
-
+   RobEntry *entry = NULL;
    void deptrace_roi_begin();
    void deptrace_roi_end();
    void deptrace_thread_create(HooksManager::ThreadCreate *args);
+
 
    static SInt64 __deptrace_roi_begin(UInt64 user, UInt64 arg) {reinterpret_cast<RobTimer*>(user)->deptrace_roi_begin(); return 0;}
    static SInt64 __deptrace_roi_end(UInt64 user, UInt64 arg) {reinterpret_cast<RobTimer*>(user)->deptrace_roi_end(); return 0;}
@@ -197,8 +202,6 @@ private:
    void deptraceSetActive(thread_id_t thread_id, bool is_active = true);
    bool deptraceRMSIsActive(thread_id_t thread_id);
    void deptraceRMSSetActive(thread_id_t thread_id, bool is_active = true);
-
-
 
    static Lock m_print_lock;
 
