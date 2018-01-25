@@ -568,7 +568,7 @@ boost::tuple<uint64_t,SubsecondTime> RobTimer::simulate(const std::vector<Dynami
                else
                   deptrace_f << " ";
                DynamicMicroOp &dmo = *entry->uop;
-               IntPtr instruction_size = dmo.getMicroOp()->getInstruction()->getSize();
+               UInt32 instruction_size = dmo.getMicroOp()->getInstruction()->getSize();
                deptrace_f << "L" << instruction_size;
                
 #if DEBUG_DEPTRACE >= 1
@@ -596,7 +596,7 @@ boost::tuple<uint64_t,SubsecondTime> RobTimer::simulate(const std::vector<Dynami
                else
                   deptrace_f << " ";
                DynamicMicroOp &dmo = *entry->uop;
-               IntPtr instruction_size= dmo.getMicroOp()->getInstruction()->getSize();
+               UInt32 instruction_size= dmo.getMicroOp()->getInstruction()->getSize();
                deptrace_f << "b" << instruction_size;
 
 #if DEBUG_DEPTRACE >= 1
@@ -627,7 +627,7 @@ boost::tuple<uint64_t,SubsecondTime> RobTimer::simulate(const std::vector<Dynami
                else
                   deptrace_f << " ";
                DynamicMicroOp &dmo = *entry->uop;
-               IntPtr instruction_size= dmo.getMicroOp()->getInstruction()->getSize();
+               UInt32 instruction_size= dmo.getMicroOp()->getInstruction()->getSize();
                deptrace_f << instruction_size;
                
 #if DEBUG_DEPTRACE >= 1
@@ -652,7 +652,7 @@ boost::tuple<uint64_t,SubsecondTime> RobTimer::simulate(const std::vector<Dynami
                else
                   deptrace_f << " ";
                 DynamicMicroOp &dmo = *entry->uop;
-              IntPtr instruction_size= dmo.getMicroOp()->getInstruction()->getSize();
+              UInt32 instruction_size= dmo.getMicroOp()->getInstruction()->getSize();
                deptrace_f << "S" << instruction_size;
 #if DEBUG_DEPTRACE >= 1
                deptrace_f << "(" << std::hex << (*it)->getInstructionNumber() << std::dec << ")";
@@ -684,7 +684,7 @@ boost::tuple<uint64_t,SubsecondTime> RobTimer::simulate(const std::vector<Dynami
        else
           deptrace_f << " ";
          DynamicMicroOp &dmo = *entry->uop;
-         IntPtr instruction_size= dmo.getMicroOp()->getInstruction()->getSize();
+         UInt32 instruction_size= dmo.getMicroOp()->getInstruction()->getSize();
          deptrace_f << instruction_size;
          }
 
