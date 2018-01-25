@@ -407,14 +407,15 @@ RobTimer::RobEntry *RobTimer::findEntryBySequenceNumber(UInt64 sequenceNumber)
    LOG_ASSERT_ERROR(entry->uop->getSequenceNumber() == sequenceNumber, "Sequence number %ld unexpectedly not at ROB position %ld", sequenceNumber, position);
    return entry;
 }
-
-std::string RobTimer::getPCDiff(std::vector<DynamicMicroOp*>::const_iterator it)
+/*
+std::string RobTimer::getPCDiff(RobEntry entry)
 {
-   uint64_t ans = (*it)->getInstructionNumber() - deptrace_last_pc;
-   deptrace_last_pc = (*it)->getInstructionNumber();
+   DynamicMicroOp &dmo = *entry->uop;
+   uint64_t ans = dmo.getMicroOp()->getInstruction()->getSize();
+  // deptrace_last_pc = (*it)->getInstructionNumber();
    return std::to_string(ans);
 }
-
+*/
 boost::tuple<uint64_t,SubsecondTime> RobTimer::simulate(const std::vector<DynamicMicroOp*>& insts)
 {
    uint64_t totalInsnExec = 0;
@@ -433,6 +434,7 @@ boost::tuple<uint64_t,SubsecondTime> RobTimer::simulate(const std::vector<Dynami
       }
 
       RobEntry *entry = &this->rob.next();
+       
       entry->init(*it, nextSequenceNumber++, nextInstructionNumber);
       if ((*it)->isLast())
       {
@@ -470,18 +472,18 @@ boost::tuple<uint64_t,SubsecondTime> RobTimer::simulate(const std::vector<Dynami
 
                // Add addr gen dependencies too
                if (deptraceIsActive(thread_id))
-	       {
-		  //uint64_t d = entry->uop->getDependency(i);
-		  uint64_t in = deptrace_microops ? entry->uop->getSequenceNumber() : entry->uop->getInstructionNumber();
-		  RobEntry *depentry = prodEntry; //findEntryBySequenceNumber(d);
-		  assert(depentry);
-		  // microop? Yes, then grab the SeqNum, otherwise, the InsnNum
-		  uint64_t din = deptrace_microops ? depentry->uop->getSequenceNumber() : depentry->uop->getInstructionNumber();
-		  if (in != din)
-		  {
+          {
+        //uint64_t d = entry->uop->getDependency(i);
+        uint64_t in = deptrace_microops ? entry->uop->getSequenceNumber() : entry->uop->getInstructionNumber();
+        RobEntry *depentry = prodEntry; //findEntryBySequenceNumber(d);
+        assert(depentry);
+        // microop? Yes, then grab the SeqNum, otherwise, the InsnNum
+        uint64_t din = deptrace_microops ? depentry->uop->getSequenceNumber() : depentry->uop->getInstructionNumber();
+        if (in != din)
+        {
                      deptrace_addr_deps.insert(in-din);
-		  }
-	       }
+        }
+          }
 
             }
          }
@@ -497,12 +499,12 @@ boost::tuple<uint64_t,SubsecondTime> RobTimer::simulate(const std::vector<Dynami
       // Save all of our dependencies, no matter which micro-op we are
       for (size_t i = 0 ; i < entry->uop->getDependenciesLength() ; ++i)
       {
-	 uint64_t d = entry->uop->getDependency(i);
+    uint64_t d = entry->uop->getDependency(i);
          uint64_t in = deptrace_microops ? entry->uop->getSequenceNumber() : entry->uop->getInstructionNumber();
-	 RobEntry *depentry = findEntryBySequenceNumber(d);
-	 assert(depentry);
+    RobEntry *depentry = findEntryBySequenceNumber(d);
+    assert(depentry);
          // microop? Yes, then grab the SeqNum, otherwise, the InsnNum
-	 uint64_t din = deptrace_microops ? depentry->uop->getSequenceNumber() : depentry->uop->getInstructionNumber();
+    uint64_t din = deptrace_microops ? depentry->uop->getSequenceNumber() : depentry->uop->getInstructionNumber();
          if (in != din)
          {
             if (i < num_reg_dep) {
@@ -548,22 +550,27 @@ boost::tuple<uint64_t,SubsecondTime> RobTimer::simulate(const std::vector<Dynami
       // If we are looking for microops (deptrace_microops), then we handle this for each microop
       if ((*it)->isLast() || deptrace_microops)
       {
-	 if (deptrace_first_line) {
-	   deptrace_last_pc = (*it)->getInstructionNumber();
-	   deptrace_f << std::hex << deptrace_last_pc << std::dec << "\n"; 
-	   deptrace_first_line = false;
-	 }
+    if (deptrace_first_line) {
+       DynamicMicroOp &dmo = *entry->uop;
+      uint32_t instruction_address= dmo.getMicroOp()->getInstruction()->getAddress();
+      deptrace_f << std::hex << instruction_address << std::dec << "\n"; 
+      deptrace_first_line = false;
+    }
 
          // In the case that we are an instruction we care about, save the entry
          if (deptrace_is_branch || deptrace_is_load || deptrace_is_store || (deptrace_reg_deps.size()!=0) || (deptrace_mem_deps.size()!=0) || (deptrace_addr_deps.size()!=0))
          {
+
             if (deptrace_is_load)
             {
                if (deptrace_last_was_newline)
                   deptrace_last_was_newline = false;
                else
                   deptrace_f << " ";
-               deptrace_f << "L" << getPCDiff(it);
+               DynamicMicroOp &dmo = *entry->uop;
+               uint32_t instruction_size= dmo.getMicroOp()->getInstruction()->getSize();
+               deptrace_f << "L" << instruction_size;
+               
 #if DEBUG_DEPTRACE >= 1
                deptrace_f << "(" << std::hex << (*it)->getInstructionNumber() << std::dec << ")";
 #endif
@@ -588,7 +595,10 @@ boost::tuple<uint64_t,SubsecondTime> RobTimer::simulate(const std::vector<Dynami
                   deptrace_last_was_newline = false;
                else
                   deptrace_f << " ";
-               deptrace_f << "b" << getPCDiff(it);
+               DynamicMicroOp &dmo = *entry->uop;
+               uint32_t instruction_size= dmo.getMicroOp()->getInstruction()->getSize();
+               deptrace_f << "b" << instruction_size;
+
 #if DEBUG_DEPTRACE >= 1
                deptrace_f << "(" << std::hex << (*it)->getInstructionNumber() << std::dec << ")";
 #endif
@@ -602,11 +612,11 @@ boost::tuple<uint64_t,SubsecondTime> RobTimer::simulate(const std::vector<Dynami
                }
                assert(deptrace_addr_deps.size() == 0);
                // No newlines for branches
-	       DynamicMicroOp &dmo = *entry->uop;
-	       deptrace_f << "t" << (deptrace_last_pc - dmo.getBranchTarget());
-	       if (dmo.isBranchTaken()) {
-		  deptrace_f << "*";
-	       }
+       
+          deptrace_f << "t" << std::hex << (dmo.getBranchTarget()) <<std::dec;
+          if (dmo.isBranchTaken()) {
+        deptrace_f << "*";
+          }
             }
 
             // For non-branch, non load, non-store instructions with dependencies
@@ -616,7 +626,10 @@ boost::tuple<uint64_t,SubsecondTime> RobTimer::simulate(const std::vector<Dynami
                   deptrace_last_was_newline = false;
                else
                   deptrace_f << " ";
-               deptrace_f << getPCDiff(it);
+               DynamicMicroOp &dmo = *entry->uop;
+               uint32_t instruction_size= dmo.getMicroOp()->getInstruction()->getSize();
+               deptrace_f << instruction_size;
+               
 #if DEBUG_DEPTRACE >= 1
                deptrace_f << "(" << std::hex << (*it)->getInstructionNumber() << std::dec << ")";
 #endif
@@ -638,7 +651,9 @@ boost::tuple<uint64_t,SubsecondTime> RobTimer::simulate(const std::vector<Dynami
                   deptrace_last_was_newline = false;
                else
                   deptrace_f << " ";
-               deptrace_f << "S" << getPCDiff(it);
+                DynamicMicroOp &dmo = *entry->uop;
+              uint32_t instruction_size= dmo.getMicroOp()->getInstruction()->getSize();
+               deptrace_f << "S" << instruction_size;
 #if DEBUG_DEPTRACE >= 1
                deptrace_f << "(" << std::hex << (*it)->getInstructionNumber() << std::dec << ")";
 #endif
@@ -663,12 +678,14 @@ boost::tuple<uint64_t,SubsecondTime> RobTimer::simulate(const std::vector<Dynami
          }
          else
          {
-	    // If we aren't a special instruction, just print the size (pc diff)
-	    if (deptrace_last_was_newline)
-	       deptrace_last_was_newline = false;
-	    else
-	       deptrace_f << " ";
-	    deptrace_f << getPCDiff(it);
+       // If we aren't a special instruction, just print the size (pc diff)
+       if (deptrace_last_was_newline)
+          deptrace_last_was_newline = false;
+       else
+          deptrace_f << " ";
+         DynamicMicroOp &dmo = *entry->uop;
+         uint32_t instruction_size= dmo.getMicroOp()->getInstruction()->getSize();
+         deptrace_f << instruction_size;
          }
 
          // Clear per-instruction data structures
@@ -707,7 +724,7 @@ boost::tuple<uint64_t,SubsecondTime> RobTimer::simulate(const std::vector<Dynami
                   deptrace_last_was_newline = false;
                else
                   deptrace_f << "\n";
-	       
+          
                deptrace_f << "C\n";
                deptrace_last_was_newline = true;
 
@@ -722,17 +739,17 @@ boost::tuple<uint64_t,SubsecondTime> RobTimer::simulate(const std::vector<Dynami
          case 2:
             if (!deptrace_roi)
             {
-	       if (deptrace_last_was_newline)
-		  deptrace_last_was_newline = false;
-	       else
-		  deptrace_f << "\n";
-		  
-	       deptrace_f << "E\n" << std::flush;
-	       deptrace_last_was_newline = true;
+          if (deptrace_last_was_newline)
+        deptrace_last_was_newline = false;
+          else
+        deptrace_f << "\n";
+        
+          deptrace_f << "E\n" << std::flush;
+          deptrace_last_was_newline = true;
                deptrace_seen_end_tran = true;
 
                deptraceRMSSetActive(thread_id, false);
-	    }
+       }
             break;
          // Initial Acq
          case 3:

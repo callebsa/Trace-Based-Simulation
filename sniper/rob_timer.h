@@ -87,7 +87,6 @@ private:
    bool deptrace_seen_end_tran = false;
    uint64_t deptrace_last_command = 0;
    std::unordered_set<uint64_t> deptrace_acquire_list;
-   uint64_t deptrace_last_pc = 0;
 
    void deptrace_roi_begin();
    void deptrace_roi_end();
@@ -199,7 +198,7 @@ private:
    bool deptraceRMSIsActive(thread_id_t thread_id);
    void deptraceRMSSetActive(thread_id_t thread_id, bool is_active = true);
 
-   std::string getPCDiff(std::vector<DynamicMicroOp*>::const_iterator it);
+
 
    static Lock m_print_lock;
 
