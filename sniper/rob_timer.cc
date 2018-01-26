@@ -411,9 +411,22 @@ RobTimer::RobEntry *RobTimer::findEntryBySequenceNumber(UInt64 sequenceNumber)
 std::string RobTimer::getPCDiff()
 {
    DynamicMicroOp &dmo = *entry->uop;
-   long long ans = dmo.getMicroOp()->getInstruction()->getAddress() - deptrace_last_pc;
-   deptrace_last_pc = dmo.getMicroOp()->getInstruction()->getAddress();
+   uint64_t ans = dmo.getMicroOp()->getInstruction()->getAddress() - deptrace_last_pc;
+  deptrace_last_pc = dmo.getMicroOp()->getInstruction()->getAddress() ;
    return std::to_string(ans);
+}
+
+void RobTimer::countLine(std::ostream& deptrace_f)
+{
+   if(deptrace_last_was_newline){
+           // deptrace_f << lines_left_to_clear_state << " of " << lines_to_clear_state << "  ";
+            if(lines_left_to_clear_state <= 1){
+               deptrace_f << "C \n";
+               lines_left_to_clear_state = lines_to_clear_state;
+            }else{
+                lines_left_to_clear_state -= 1;
+            }
+         }
 }
 
 boost::tuple<uint64_t,SubsecondTime> RobTimer::simulate(const std::vector<DynamicMicroOp*>& insts)
@@ -550,15 +563,16 @@ boost::tuple<uint64_t,SubsecondTime> RobTimer::simulate(const std::vector<Dynami
       // If we are looking for microops (deptrace_microops), then we handle this for each microop
       if ((*it)->isLast() || deptrace_microops)
       {
-	 DynamicMicroOp &dmo = *entry->uop;
-         
-	 if (deptrace_first_line) {
-	    deptrace_last_pc = dmo.getMicroOp()->getInstruction()->getAddress();
-	    deptrace_f << std::hex << deptrace_last_pc << std::dec << "\n"; 
-	    deptrace_first_line = false;
-	 }
-	 
-	 // In the case that we are an instruction we care about, save the entry
+    if (deptrace_first_line) {
+       DynamicMicroOp &dmo = *entry->uop;
+      deptrace_last_pc = dmo.getMicroOp()->getInstruction()->getAddress();
+      lines_to_clear_state = Sim()->getCfg()->getInt("rob_timer/insert-clear-stat-by-icount");
+      lines_left_to_clear_state = lines_to_clear_state;
+      deptrace_f << std::hex << deptrace_last_pc << std::dec << "\n"; 
+      deptrace_first_line = false;
+    }
+    DynamicMicroOp &dmo = *entry->uop;
+         // In the case that we are an instruction we care about, save the entry
          if (deptrace_is_branch || deptrace_is_load || deptrace_is_store || (deptrace_reg_deps.size()!=0) || (deptrace_mem_deps.size()!=0) || (deptrace_addr_deps.size()!=0))
          {
 
@@ -571,7 +585,7 @@ boost::tuple<uint64_t,SubsecondTime> RobTimer::simulate(const std::vector<Dynami
                deptrace_f << "L" << getPCDiff();
                
 #if DEBUG_DEPTRACE >= 1
-               deptrace_f << "(" << std::hex << dmo.getMicroOp()->getInstruction()->getAddress() << std::dec << ")";
+               deptrace_f << "(" << std::hex << (*it)->getInstructionNumber() << std::dec << ")";
 #endif
                for (auto rdep : deptrace_reg_deps)
                {
@@ -586,6 +600,7 @@ boost::tuple<uint64_t,SubsecondTime> RobTimer::simulate(const std::vector<Dynami
                deptrace_f << " " << deptrace_load_size << "\n";
                deptrace_load_addr = 0x0;
                deptrace_last_was_newline = true;
+               countLine(deptrace_f);
             }
           
             if (deptrace_is_branch)
@@ -594,10 +609,12 @@ boost::tuple<uint64_t,SubsecondTime> RobTimer::simulate(const std::vector<Dynami
                   deptrace_last_was_newline = false;
                else
                   deptrace_f << " ";
-	       deptrace_f << "b" << getPCDiff();
+              
+         
+               deptrace_f << "b" << getPCDiff();
 
 #if DEBUG_DEPTRACE >= 1
-               deptrace_f << "(" << std::hex << dmo.getMicroOp()->getInstruction()->getAddress() << std::dec << ")";
+               deptrace_f << "(" << std::hex << (*it)->getInstructionNumber() << std::dec << ")";
 #endif
                for (auto rdep : deptrace_reg_deps)
                {
@@ -622,11 +639,13 @@ boost::tuple<uint64_t,SubsecondTime> RobTimer::simulate(const std::vector<Dynami
                if (deptrace_last_was_newline)
                   deptrace_last_was_newline = false;
                else
-                  deptrace_f << " ";	       
+                  deptrace_f << " ";
+              
+
                deptrace_f << getPCDiff();
                
 #if DEBUG_DEPTRACE >= 1
-               deptrace_f << "(" << std::hex << dmo.getMicroOp()->getInstruction()->getAddress() << std::dec << ")";
+               deptrace_f << "(" << std::hex << (*it)->getInstructionNumber() << std::dec << ")";
 #endif
                for (auto rdep : deptrace_reg_deps)
                {
@@ -646,10 +665,10 @@ boost::tuple<uint64_t,SubsecondTime> RobTimer::simulate(const std::vector<Dynami
                   deptrace_last_was_newline = false;
                else
                   deptrace_f << " ";
+               
                deptrace_f << "S" << getPCDiff();
-
 #if DEBUG_DEPTRACE >= 1
-               deptrace_f << "(" << std::hex << dmo.getMicroOp()->getInstruction()->getAddress() << std::dec << ")";
+               deptrace_f << "(" << std::hex << (*it)->getInstructionNumber() << std::dec << ")";
 #endif
                for (auto rdep : deptrace_reg_deps)
                {
@@ -667,6 +686,7 @@ boost::tuple<uint64_t,SubsecondTime> RobTimer::simulate(const std::vector<Dynami
                deptrace_f << " " << deptrace_store_size << "\n";
                deptrace_store_addr = 0x0;
                deptrace_last_was_newline = true;
+               countLine(deptrace_f);
             }
 
          }
@@ -681,6 +701,8 @@ boost::tuple<uint64_t,SubsecondTime> RobTimer::simulate(const std::vector<Dynami
          deptrace_f << getPCDiff();
          }
 
+       
+         
          // Clear per-instruction data structures
          deptrace_is_branch = false;
          deptrace_is_load = false;
@@ -769,6 +791,7 @@ boost::tuple<uint64_t,SubsecondTime> RobTimer::simulate(const std::vector<Dynami
                
                deptrace_f << "A " << std::hex << deptrace_save_data[0] << " " << deptrace_save_data[1] << " " << deptrace_save_data[2] << std::dec << "\n";
                deptrace_last_was_newline = true;
+               countLine(deptrace_f);
             }
 
             // We shouldn't have this address in here yet.
@@ -794,6 +817,7 @@ boost::tuple<uint64_t,SubsecondTime> RobTimer::simulate(const std::vector<Dynami
                
                deptrace_f << "R " << std::hex << (*it)->getMicroOp()->trace_data[1] << " " << (*it)->getMicroOp()->trace_data[2] << " " << thread_id << std::dec << "\n";
                deptrace_last_was_newline = true;
+               countLine(deptrace_f);
             }
 
             deptraceSetActive(thread_id, false);
@@ -814,6 +838,7 @@ boost::tuple<uint64_t,SubsecondTime> RobTimer::simulate(const std::vector<Dynami
                
                deptrace_f << "B " << std::hex << (*it)->getMicroOp()->trace_data[1] << " " << (*it)->getMicroOp()->trace_data[2] << " " << (*it)->getMicroOp()->trace_data[3] << " " << thread_id << "\n" << std::dec;
                deptrace_last_was_newline = true;
+               countLine(deptrace_f);
             }
 
             deptraceSetActive(thread_id, false);
@@ -834,6 +859,7 @@ boost::tuple<uint64_t,SubsecondTime> RobTimer::simulate(const std::vector<Dynami
                
                deptrace_f << "X " << std::hex << (*it)->getMicroOp()->trace_data[1] << " " << (*it)->getMicroOp()->trace_data[2] << " " << (*it)->getMicroOp()->trace_data[3] << " " << thread_id << "\n" << std::dec;
                deptrace_last_was_newline = true;
+               countLine(deptrace_f);
             }
 
             deptraceSetActive(thread_id, false);
@@ -849,6 +875,7 @@ boost::tuple<uint64_t,SubsecondTime> RobTimer::simulate(const std::vector<Dynami
                
                deptrace_f << "Y " << std::hex << (*it)->getMicroOp()->trace_data[1] << " " << (*it)->getMicroOp()->trace_data[2] << " " << (*it)->getMicroOp()->trace_data[3] << " " << thread_id << "\n" << std::dec;
                deptrace_last_was_newline = true;
+               countLine(deptrace_f);
             }
 
             deptraceSetActive(thread_id, false);
@@ -864,7 +891,9 @@ boost::tuple<uint64_t,SubsecondTime> RobTimer::simulate(const std::vector<Dynami
                
                deptrace_f << "Z " << std::hex << (*it)->getMicroOp()->trace_data[1] << " " << (*it)->getMicroOp()->trace_data[2] << " " << (*it)->getMicroOp()->trace_data[3] << " " << thread_id << "\n" << std::dec;
                deptrace_last_was_newline = true;
+               countLine(deptrace_f);
             }
+
 
             deptraceSetActive(thread_id, false);
             break;
@@ -884,6 +913,7 @@ boost::tuple<uint64_t,SubsecondTime> RobTimer::simulate(const std::vector<Dynami
                
                deptrace_f << "T " << std::hex << (*it)->getMicroOp()->trace_data[1] << " " << thread_id << "\n" << std::dec;
                deptrace_last_was_newline = true;
+               countLine(deptrace_f);
             }
 
             deptraceSetActive(thread_id, false);
@@ -905,6 +935,7 @@ boost::tuple<uint64_t,SubsecondTime> RobTimer::simulate(const std::vector<Dynami
                
                deptrace_f << "U " << std::hex << (*it)->getMicroOp()->trace_data[1] << " " << thread_id << "\n" << std::dec;
                deptrace_last_was_newline = true;
+               countLine(deptrace_f);
             }
 
             deptraceSetActive(thread_id, false);
@@ -933,6 +964,7 @@ boost::tuple<uint64_t,SubsecondTime> RobTimer::simulate(const std::vector<Dynami
                // For V, we need to explicitly release the lock
                deptrace_f << "R " << std::hex << (*it)->getMicroOp()->trace_data[2] << " 0 " << thread_id << "\n" << std::dec;
                deptrace_last_was_newline = true;
+               countLine(deptrace_f);
             }
 
             // Always handle thread state data
@@ -956,7 +988,8 @@ boost::tuple<uint64_t,SubsecondTime> RobTimer::simulate(const std::vector<Dynami
             {
                // For V, we need to explicitly acquire the lock
                deptrace_f << "A " << std::hex << deptrace_thread_released[thread_id] << " 0 " << thread_id << "\n" << std::dec;
-               deptrace_last_was_newline = true;            
+               deptrace_last_was_newline = true;
+               countLine(deptrace_f);            
             }
 
             // Always handle thread state data

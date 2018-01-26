@@ -92,10 +92,12 @@ private:
    bool deptrace_first_line = true;
    std::unordered_set<uint64_t> deptrace_acquire_list;
    RobEntry *entry = NULL;
+   int lines_to_clear_state = 5;
+   int lines_left_to_clear_state = lines_to_clear_state;
    void deptrace_roi_begin();
    void deptrace_roi_end();
    void deptrace_thread_create(HooksManager::ThreadCreate *args);
-
+   void countLine(std::ostream& deptrace_f);   
 
    static SInt64 __deptrace_roi_begin(UInt64 user, UInt64 arg) {reinterpret_cast<RobTimer*>(user)->deptrace_roi_begin(); return 0;}
    static SInt64 __deptrace_roi_end(UInt64 user, UInt64 arg) {reinterpret_cast<RobTimer*>(user)->deptrace_roi_end(); return 0;}
