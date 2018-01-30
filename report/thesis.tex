@@ -29,6 +29,16 @@
 
 \usepackage{tikz}
 \usetikzlibrary{arrows, decorations.text}
+\usetikzlibrary{arrows, decorations.markings}
+\usetikzlibrary{shapes,arrows}
+% for double arrows a la chef
+% adapt line thickness and line width, if needed
+\tikzstyle{vecArrow} = [thick, decoration={markings,mark=at position
+   1 with {\arrow[semithick]{open triangle 60}}},
+   double distance=3pt, shorten >= 5.5pt, 
+   preaction = {decorate},
+   postaction = {draw,line width=1.4pt, white,shorten >= 4.5pt}]
+\tikzstyle{innerWhite} = [semithick, white,line width=1.4pt, shorten >= 4.5pt]
 
 \usepackage{subcaption}
 \usepackage{multicol}

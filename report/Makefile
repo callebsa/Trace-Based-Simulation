@@ -12,7 +12,7 @@ all:
 thesis: $(TEX) $(BIB) $(FIGS) 
 	latexmk -pdf -f thesis.tex
 
-frontpageAndAbstract: 
+frontpageAndAbstract: frontpageAndAbstract.tex
 	cd frontpageAndAbstract && latexmk -pdf -f frontpageAndAbstract.tex
 
 
@@ -23,7 +23,5 @@ build:
 	
 clean:
 	rm -f *.out *.log *.bcf *.toc *.run.xml frontpageAndAbstract.pdf
-	cd frontpageAndAbstract/ && rm -f *.out *.log *.bcf *.toc *.run.xml frontpageAndAbstract.pdf
+	cd frontpageAndAbstract/ && rm -f *.out *.log *.bcf *.toc *.run.xml 
 
-cleanAux:
-	rm -f *.out *.log *.bcf *.toc *.run.xml frontpageAndAbstract.pdf
