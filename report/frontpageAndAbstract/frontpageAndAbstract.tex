@@ -1,0 +1,75 @@
+% MUST use a4paper option
+% MAY use twoside, smaller font, and other class
+\documentclass[a4paper,12pt]{article}
+% Use UTF-8 encoding in input files
+\usepackage[utf8]{inputenc}
+% If you are writing in English, un-comment the following line:
+\usepackage[swedish,english]{babel}
+% Use the template for thesis reports
+\usepackage{UppsalaExjobb}
+
+%for formating
+\usepackage{etoolbox}
+
+
+% Designval: per default används styckesindrag, men ibland blir det snyggare/mer lättläst med tomrad mellan stycken. Det åstadkoms av de följande raderna.
+% Tycker ni om styckesindrag mera, kommentera bort nästa två rader.
+\parskip=0.8em
+\parindent=0mm
+
+%\preto\paragraph{\filbreak}
+
+%\begin{document}
+% Set title, and subtitle if you have one
+\title{Store prefetch policies}
+\subtitle{Analysis and new proposals} 
+% Set author names, separated by "\\ " (don't forget the space)
+\author{Boström, Carl}
+% Set the date and year - use the right language!
+\date{June 2018}
+% Only need to set the year if it differs from the current year
+%\year=2016
+
+% Ange handledare, ämnesgranskare, examinator om dessa finns
+% Handledare: t.ex på företag ni arbetat med?
+
+% Ämnesgranskare används inte på Självständigt arbete i IT
+\reviewer{Stefanos Kaxiras}
+% På Självständigt arbete i IT är detta BV
+
+\handledare{Alberto Ros Bardisa}
+\examinator{??}
+% OM NI HAFT EXTERN HANDLEDARE
+%\exthandledare{Håkan Lundmark, Crowderia AB}
+
+\progname{Civilingenj{\"o}rsprogrammet i informationsteknologi}{Computer and Information Engineering Programme}
+\enhetsnamn{Institutionen för \\ informationsteknologi}
+\besoksadress{ITC, Polacksbacken\\ Lägerhyddsvägen 2}
+\postadress{Box 337 \\ 751 05 Uppsala}
+\hemsida{http:/www.it.uu.se}
+
+% Programnamn på svenska och engelska
+\progname{Computer and Information Engineering Programme}{Civilingenj{\"o}rsprogrammet i informationsteknologi}
+% Set the name of the series, and the number in the series
+%\seriesname{Independent Project in Information Engineering}
+
+% Get a series number from Studentservice Ångström
+%\seriesnumber{UPTEC IT16~0xx}
+% Use the appropriate ISSN for the series
+%\issn{ISSN 1401-5749}
+% Usually this is where it is printed
+%\printer{Ångströmlaboratoriet, Uppsala universitet}
+
+% This creates the title page
+
+\begin{document}
+\maketitle
+% Change to frontmatter style (e.g. roman page numbers)
+\frontmatter
+\begin{abstract}
+This work will be focusing on how to gain performance when executing programs on a CPU. More specifically the store instructions will be studied. The memory instructions often causes huge delays while waiting on data to be brought in from main memory to the L1 cache. If an out-of-order (OoO) CPU cannot be fed with useful instructions, cycles will be wasted. To try to over overcome this issue, my supervisor, Alberto Ros Bardisa, have come up with the idea to use predictors to try to predict which data to be needed in the feature and brought it in to the L1 cache in advance. This is similar to the branch predictor that has been around for a while, where the CPU is fed with instructions to start working in advance based on the prediction whether or not a branch is to be taken. In this case we guess on which data to be brought in to the L1 case instead of which instructions to be brought in, in advance. Of course you want the prediction to be correct, but even if we assume that it always prefetches useful data there might still be a problem: When to bring in the data? Too late an you still need to wait since the need of it occur before it is in place. Too early and it will be evicted from the L1 cache due to space issues and there will be a waiting time to brought it in again when the need occur. The latest will also be a waste of energy since we brought in something to be evicted before use. The question I will try to answer with this master thesis is when to prefetch data to gain optimal performance. 
+\end{abstract}
+
+
+
+\end{document}
