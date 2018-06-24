@@ -13,7 +13,7 @@
 \usepackage[a4paper,left=4cm,right=4cm,top=3cm,bottom=3cm]{geometry}
 \usepackage{emptypage}
 \usepackage[page]{appendix}
-
+\usepackage{textcomp}
 % For adjusting the spacing between chapters in the TOC
 \usepackage{tocloft}
 \renewcommand\cftbeforechapskip{3pt}
@@ -62,12 +62,18 @@
   }%
   \ORIGchapterheadendvskip
 }
-
+ 
 % -------------------------------------------------------------
 %  Custom Macros
 % -------------------------------------------------------------
 \newcommand{\icode}[1]{\mbox{\texttt{{#1}}}}
 \newcommand{\fixme}[0]{\textbf{\color{red}FIXME!!}}
+\newcommand{\THsec}[2]{\section{#1}\label{sec:#2}}
+\newcommand{\THsub}[2]{\subsection{#1}\label{subsec:#2}}
+\newcommand{\THsubsub}[2]{\subsubsection{#1}\label{subsubsec:#2}}
+\newcommand{\THstage}[1]{\subsubsection{#1}\label{subsubsec:#1}}
+\newcommand{\THpar}[2]{\paragraph{#1}\label{par:#2}}
+\newcommand{\THnewWord}[1]{\textbf{#1}}
 % -------------------------------------------------------------
 %  Source Code
 % -------------------------------------------------------------

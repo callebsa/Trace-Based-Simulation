@@ -1,7 +1,6 @@
 \chapter{Introduction}
 \label{chap:In}
- \section{Motivation}
- \label{sec:motivation}
+ \THsec{Motivation}{motivation}
 We are always in the need of faster and smaller computers that burns less energy. In
 the second part of the twentieth century the speed of our CPUs (center process unit)
 were increased by letting them run faster and faster. The problem is that a linear
@@ -36,8 +35,7 @@ prefetching the data needed for store instructions in advance. The earlier data 
 prefetch the earlier it will be ready to use. This little pieces in the question of making
 a CPU do more useful work per unit of energy is what this thesis will be about.
 
-\section{Scope}
-\label{sec:scope}
+ \THsec{Scope}{scope}
 This master thesis will introduce and evaluate three given policies for prefetching data
 for load instruction. There are not much research to be found that are focusing on
 the acceleration of load instructions in particular. The three basic policies will be
@@ -45,7 +43,7 @@ combined in different ways to try to come out with a more optimal policy in term
 speed up (number of cycles) and power consumption. A bit of the preparation work
 in terms of manipulating and understanding traces from benchmarks programs will
 be covered as well.
- \section{Related work}
+ \THsec{Related work}{relWork}
 Below you can read about four related works that have in common that they have all
 used gems 2.2.3. \fixme
 
@@ -63,10 +61,9 @@ commit by a sizable margin in comparison with the base case where memory operati
 where not allowed to commit if the consistency model cold be violated.
 
 
-\section {Structure of the report}
-\label{Sec:struct}
+\THsec{Structure of the report}{structure}
 
-This report consist of seven chapter and one appendix chapter. \fixme
+This report consist of seven chapter and one appendix chapter. \fixme 
 \paragraph{Chapter 1 - Introduction} It gives a motivation of the work along with its scope
 and related work.
 \paragraph{Chapter 2 - Background} This chapter is divided into two parts. The first covers
