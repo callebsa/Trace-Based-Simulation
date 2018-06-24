@@ -4,6 +4,7 @@
 \usepackage{color}
 \usepackage[table]{xcolor}
 \usepackage{url}
+\usepackage[utf8]{inputenc}
 \usepackage{newfloat}
 \usepackage{todonotes}
 % pdfborderstyle to fix the bounding rectangle
@@ -42,6 +43,7 @@
 
 \usepackage{subcaption}
 \usepackage{multicol}
+\usepackage{xcolor}
 
 \usepackage{pdfpages}
 
@@ -65,7 +67,7 @@
 %  Custom Macros
 % -------------------------------------------------------------
 \newcommand{\icode}[1]{\mbox{\texttt{{#1}}}}
-
+\newcommand{\fixme}[0]{\textbf{\color{red}FIXME!!}}
 % -------------------------------------------------------------
 %  Source Code
 % -------------------------------------------------------------
@@ -110,10 +112,11 @@
 
 \begin{document}
 
+\pagenumbering{roman}
 
 \includepdf[pages={1}]{frontpageAndAbstract/frontpageAndAbstract.pdf}
-\null
-\cleardoublepage
+%\null
+%\cleardoublepage
 \includepdf[pages={2}]{frontpageAndAbstract/frontpageAndAbstract.pdf}
 
 \null
@@ -122,12 +125,15 @@
 \input{acknowledgement}
 
 \pagestyle{plain}
-\pagenumbering{roman}
 
 \tableofcontents
-
+\newpage
+\listoffigures
+ \newpage
+\listoftables
 \null
 \cleardoublepage
+\input{glossery.tex}
 
 \pagenumbering{arabic}
 

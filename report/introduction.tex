@@ -1,3 +1,89 @@
 \chapter{Introduction}
 \label{chap:In}
-About the work it selves
+ \section{Motivation}
+ \label{sec:motivation}
+We are always in the need of faster and smaller computers that burns less energy. In
+the second part of the twentieth century the speed of our CPUs (center process unit)
+were increased by letting them run faster and faster. The problem is that a linear
+frequency speed up causes an exponential growth in energy and heat. A rule of thumb
+is that you will be spending as much energy as needed for the computation to cool the
+circuit. Since we want to make smaller and smaller units, its gets harder and harder
+to cool down. Less materials that are getting warmer will be almost impossible to
+cool down after some limit. But we are on the other hand still developing software
+that requires more and more of the hardware. When we cannot speed up our CPUs
+in the same way as before, we need to see if we can be more effective. Thats when
+CPUs introduced pipelining. Lets say that an instruction take six seconds to compute
+the we and up with two finished instructions after twelve seconds. If we then divided
+the work into three stages where one instruction spends two second each, meaning
+that we can begin working on a new instruction every two seconds. Given this, four
+instruction (twice the amount) will be done in twelve seconds, this results in increasing
+the work that can be done during a period of time without increasing the speed
+of the CPU and therefore the energy consumption roughly stays the same.
+\\ \\
+Another thing to take advantage of is that computing some instructions especially
+memory instructions (loads and stores) are involving long waiting times. If we then
+instead of just waiting, goes ahead and computes other work, with the next instructions.
+We are not effected by the waiting time in the long run because we are starting
+the computation of the instruction next in line while waiting. This is called out of
+order execution and it is up to the CPU to decide if the work can be done in another
+order and still produce the same outcome.
+\\ \\
+We have sad that the computation of memory instructions include waiting on data
+and that we can do useful tasks while waiting. Still it is good if we can decrease the
+waiting time, since we might not always have useful tasks to work on that cover the
+entire waiting time. In this thesis will look if we can shorter the waiting time by
+prefetching the data needed for store instructions in advance. The earlier data is
+prefetch the earlier it will be ready to use. This little pieces in the question of making
+a CPU do more useful work per unit of energy is what this thesis will be about.
+
+\section{Scope}
+\label{sec:scope}
+This master thesis will introduce and evaluate three given policies for prefetching data
+for load instruction. There are not much research to be found that are focusing on
+the acceleration of load instructions in particular. The three basic policies will be
+combined in different ways to try to come out with a more optimal policy in terms of
+speed up (number of cycles) and power consumption. A bit of the preparation work
+in terms of manipulating and understanding traces from benchmarks programs will
+be covered as well.
+ \section{Related work}
+Below you can read about four related works that have in common that they have all
+used gems 2.2.3. \fixme
+
+\paragraph{No need to squash and re-execute for reordering} Alberto Ros, Trevor E. Carlson,
+Mehdi Alipour and Stefanos Kaxiras, have written the report ”Non-Speculative
+Load-Load Reordering in TSO” [12]\fixme. For decades it has been a fact that if a CPU
+(in a multi core architecture) reorders a load to gain performance then the other
+core must upon observation squashed and re-execute speculative instructions. This
+paper can, for the first time, show that the action is not necessary for total store
+ordering (TSO). The reordering can instead be hidden for the other cores. This allow
+us to commit reordered loads out-of-order without having to wait for the loads to
+become non-speculative or without having to checkpoint committed sate and rollback
+if needed.There solution is cost-effective and increase the performance of out-of-order
+commit by a sizable margin in comparison with the base case where memory operations
+where not allowed to commit if the consistency model cold be violated.
+
+
+\section {Structure of the report}
+\label{Sec:struct}
+
+This report consist of seven chapter and one appendix chapter. \fixme
+\paragraph{Chapter 1 - Introduction} It gives a motivation of the work along with its scope
+and related work.
+\paragraph{Chapter 2 - Background} This chapter is divided into two parts. The first covers
+the architecture and related terms that will be used throughout the report. The first
+part will also cover the three given polices. The second part covers the given softwares
+used and benchmarks.
+\paragraph{Chapter 3 - Setting Up The Testbed} This can be seen as a continuing of the
+second part in chapter 2, here we go through the manipulation of existing tools and
+the creating of new ones. The trace which has manipulated to support the simulation
+is covered in this chapter.
+\paragraph{Chapter 4 - Proposed Prefetch Policies} This will introduce all prefetch polices
+that is proposed within the work of this thesis. They are all combinations of the basic
+three introduced in the background.
+\paragraph{Chapter 5 - Results} Here you will find graphs comparing the different polices
+with different settings in terms of power, L0 accesses, useful prefetch and energy.
+\paragraph{Chapter 6 - Conclusions} This chapter will try to explain the results and draw
+some conclusions of it.
+\paragraph{Chapter 7 - Discussion} mandatory??
+\paragraph{Chapter A - Implementation details} In this appendix we will cover the key
+parts of the implementation of the new policies in some pseudo code examples.
