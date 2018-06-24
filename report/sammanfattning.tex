@@ -1,2 +1,21 @@
 \chapter*{Sammanfattning}
+Detta arbete kommer att fokusera på hur prestandan vid körning av program på en
+CPU kan ökas. Mer specifikt kommer store instruktionerna att studeras. Minnes
+instruktioner osakar ofta stora förseningar i samband med väntan på att data ska
+överföras från RAM-minnet till L1 cachen. Om en out-of-order CPU inte kan hitta
+andre instruktioner att jobba med i väntan på datan så kommer dessa cyklar att
+slösas bort. För att försöka överkomma denna problematik så har min handledare,
+Alberto Ros Bardisa, kommit med iden att använda predictors för att förutspå vilken
+data som kommer att användas inom snar framtid och överföra den till L1 cachen i
+förväg. Detta liknar branch predictors som används i flera år, där CPUn matas med
+instruktioner att börjar jobba med baserat på en gissning om branchen kommer att tas
+eller inte. Här gissar vi vilken data som ska överföras till L1 i förväg istället för vilken
+instruktioner som kommer efter en branch. Såklart är det önskvärt att gissningen är
+korrekt, men även om den är det så kan vi ha problem: När ska datan överföras? För
+sent och vi måste fortfarande vänta eftersom behovet av data uppkommer ni den är
+på plats. För tidigt och data kan bli avlägsnad från L1 cachen på grund av platsbrist
+och det blir en väntetid för att överföra datan på nytt när behovet väl uppstår. De
+senare är också ett slöseri av energi då vi överför något som kommer att avlägsnas
+innan användning. Frågan i detta masterarbete är när data ska överföras för optimal
+prestanda.
 \newpage
