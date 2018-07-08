@@ -3,28 +3,33 @@
 
 \THsec{State of the art}{base}
 
-Here we will analyce the following prefetch policies:
+Here we will analyze the following prefetch policies:
 \begin{itemize}
-	\item noPrefetch
+	\item NoPrefetch
 	\item onExecute
 	\item onCommit
 \end{itemize}
 \resExtime
 \avgTable{extime}{run1-0-avg}{State of the art average execution time}{}
+This table concludes very well the impact on the run time of prefetch. Using any type of prefetch policy will roughly cut the runtime with a third (for the benchmarks that was used here). This tell us once for all that waiting on data to be brought in to the L0 cache for a store instruction takes time. But it is not really just to prefetch how aggressively you want, cause if we compare OnExecute and OnCommit we see that OnExecute is 1.9 percent units slower. OnExecute issue there prefetch earlier and will therefore prefetch more data that later will turn out to not be used, unnecessary prefetch slows down the execution and most therefore be minimized.
 \fullTable{extime}{run1-0-full}{State of the art execution time for all benchmarks}
-\toplist{extime}{run1-0}{State of the art the benchmarks which execution times are effected the most (in number of procent)}{OnExexcute}
+\toplist{extime}{run1-0}{State of the art the benchmarks which execution times are effected the most (in number of percent)}{OnExexcute}
 \resAcc
-\avgTable{L0}{run1-1-avg}{State of the art average number of L0 accsesse}{}
-\fullTable{L0}{run1-1-full}{State of the art number of L0 accsesse for all benchmarks}
-\toplist{L0}{run1-1}{State of the art the benchmarks which number of L0 accsesses are effected the most (in number of procent)}{OnExexcute}
+\avgTable{L0}{run1-1-avg}{State of the art average number of L0 accesses}{}
+This is one interesting graph which shoes us the amount of unnecessary work that is caused by prefetching. NoPrefetch does, as the name says, no prefetches which means that all L0 accesses are caused by needed data for store instructions that are to be executed in the point in time. Everything above 76.6 \% are unnecessary work which will waste energy. OnExecute does as expected more accesses then OnCommit since it prefetches early and more speculative.
+
+\fullTable{L0}{run1-1-full}{State of the art number of L0 accesses for all benchmarks}
+\toplist{L0}{run1-1}{State of the art the benchmarks which number of L0 accesses are effected the most (in number of percent)}{OnExexcute}
 \resSp
 \avgTable{sp}{run1-2-avg}{State of the art average number of store prefetches}{}
+The number of store prefetches confirms the beehives and conclusions drawn from the tables over execution times and L0 accesses. NoPrefetch does none store prefetch and OnExeute does most.
 \fullTable{sp}{run1-2-full}{State of the art number of store prefetches for all benchmarks}
-\toplist{sp}{run1-2}{State of the art the benchmarks which number of store prefetchess are effected the most (in number of procent)}{OnExexcute}
+\toplist{sp}{run1-2}{State of the art the benchmarks which number of store prefetches are effected the most (in number of percent)}{OnExexcute}
 \resEnergy
 \avgTable{energy}{run1-3-avg}{State of the art average energy consumption}{}
 \fullTable{energy}{run1-3-full}{State of the art energy consumption for all benchmarks}
-\toplist{energy}{run1-3}{State of the art the benchmarks which energy consumption are effected the most (in number of procent)}{OnExexcute}
+\toplist{energy}{run1-3}{State of the art the benchmarks which energy consumption are effected the most (in number of percent)}{OnExexcute}
+
 \THsec{Techniques to reduce speculation effect}{reduce}
 Here we will analyce all prefetch policies from state of the art \fixme and the following three new onec:
 \begin{itemize}
@@ -35,36 +40,51 @@ Here we will analyce all prefetch policies from state of the art \fixme and the 
 \resExtime
 \avgTable{extime2}{run2-0-avg}{Reduce speculation average execution time}{}
 \fullTable{extime2}{run2-0-full}{Reduce speculation execution time for all benchmarks}
-\toplist{extime2}{run2-0}{Reduce speculation the benchmarks which execution times are effected the most (in number of procent)}{OnNonBSpec with ReExecute}
+\toplist{extime2}{run2-0}{Reduce speculation the benchmarks which execution times are effected the most (in number of percent)}{OnNonBSpec with ReExecute}
 \resAcc
-\avgTable{L02}{run2-1-avg}{Reduce speculation average number of L0 accsesse}{}
-\fullTable{L02}{run2-1-full}{Reduce speculation number of L0 accsesse for all benchmarks}
-\toplist{L02}{run2-1}{Reduce speculation the benchmarks which number of L0 accsesses are effected the most (in number of procent)}{OnNonBSpec with ReExecute}
+\avgTable{L02}{run2-1-avg}{Reduce speculation average number of L0 accesses}{}
+\fullTable{L02}{run2-1-full}{Reduce speculation number of L0 accesses for all benchmarks}
+\toplist{L02}{run2-1}{Reduce speculation the benchmarks which number of L0 accesses are effected the most (in number of percent)}{OnNonBSpec with ReExecute}
 \resSp
 \avgTable{sp2}{run2-2-avg}{Reduce speculation average number of store prefetches}{}
 \fullTable{sp2}{run2-2-full}{Reduce speculation number of store prefetches for all benchmarks}
-\toplist{sp2}{run2-2}{Reduce speculation the benchmarks which number of store prefetchess are effected the most (in number of procent)}{OnNonBSpec with ReExecute}
+\toplist{sp2}{run2-2}{Reduce speculation the benchmarks which number of store prefetches are effected the most (in number of percent)}{OnNonBSpec with ReExecute}
 \resEnergy
 \avgTable{energy2}{run2-3-avg}{Reduce speculation average energy consumption}{}
 \fullTable{energy2}{run2-3-full}{Reduce speculation energy consumption for all benchmarks}
-\toplist{energy2}{run2-3}{Reduce speculation the benchmarks which energy consumption are effected the most (in number of procent)}{OnNonBSpec with ReExecute}
+\toplist{energy2}{run2-3}{Reduce speculation the benchmarks which energy consumption are effected the most (in number of percent)}{OnNonBSpec with ReExecute}
 \THsec{Techniques to filter unecessary prefetches}{filter}
 \avgTable{extime3}{run3-0-avg}{Reduce speculation average execution time}{* with reExecute}
 2 = 4 \\
 8 = 6, 10,16 \\
 
 \fullTable{extime3}{run3-0-full}{Reduce speculation execution time for all benchmarks}
-\toplist{extime3}{run3-0}{Reduce speculation the benchmarks which execution times are effected the most (in number of procent)}{OnNonBSpec with ReExecute and SameCaceLine}
+\toplist{extime3}{run3-0}{Reduce speculation the benchmarks which execution times are effected the most (in number of percent)}{OnNonBSpec with ReExecute and SameCaceLine}
 \resAcc
-\avgTable{L03}{run3-1-avg}{Reduce speculation average number of L0 accsesse}{* with reExecute}
-\fullTable{L03}{run3-1-full}{Reduce speculation number of L0 accsesse for all benchmarks}
-\toplist{L03}{run3-1}{Reduce speculation the benchmarks which number of L0 accsesses are effected the most (in number of procent)}{OnNonBSpec with ReExecute and SameCaceLine}
+\avgTable{L03}{run3-1-avg}{Reduce speculation average number of L0 accesses}{* with reExecute}
+\fullTable{L03}{run3-1-full}{Reduce speculation number of L0 accesses for all benchmarks}
+\toplist{L03}{run3-1}{Reduce speculation the benchmarks which number of L0 accesses are effected the most (in number of percent)}{OnNonBSpec with ReExecute and SameCaceLine}
 \resSp
 \avgTable{sp3}{run3-2-avg}{Reduce speculation average number of store prefetches}{* with reExecute}
 \fullTable{sp3}{run3-2-full}{Reduce speculation number of store prefetches for all benchmarks}
-\toplist{sp3}{run3-2}{Reduce speculation the benchmarks which number of store prefetchess are effected the most (in number of procent)}{OnNonBSpec with ReExecute and SameCaceLine}
+\toplist{sp3}{run3-2}{Reduce speculation the benchmarks which number of store prefetches are effected the most (in number of percent)}{OnNonBSpec with ReExecute and SameCaceLine}
 \resEnergy
 \avgTable{energy3}{run3-3-avg}{Reduce speculation average energy consumption}{* with reExecute}
 \fullTable{energy3}{run3-3-full}{Reduce speculation energy consumption for all benchmarks}
-\toplist{energy3}{run3-3}{Reduce speculation the benchmarks which energy consumption are effected the most (in number of procent)}{OnNonBSpec with ReExecute and SameCaceLine}
+\toplist{energy3}{run3-3}{Reduce speculation the benchmarks which energy consumption are effected the most (in number of percent)}{OnNonBSpec with ReExecute and SameCaceLine}
 \THsec{Techniques for timelines}{timelines}
+
+\fullTable{extime3}{run4-0-full}{Reduce speculation execution time for all benchmarks}
+\toplist{extime3}{run4-0}{Reduce speculation the benchmarks which execution times are effected the most (in number of percent)}{n/a}
+\resAcc
+\avgTable{L03}{run4-1-avg}{Reduce speculation average number of L0 accesses}{* with reExecute}
+\fullTable{L03}{run4-1-full}{Reduce speculation number of L0 accesses for all benchmarks}
+\toplist{L03}{run4-1}{Reduce speculation the benchmarks which number of L0 accsesss are effected the most (in number of percent)}{n/a}
+\resSp
+\avgTable{sp3}{run4-2-avg}{Reduce speculation average number of store prefetches}{* with reExecute}
+\fullTable{sp3}{run4-2-full}{Reduce speculation number of store prefetches for all benchmarks}
+\toplist{sp3}{run4-2}{Reduce speculation the benchmarks which number of store prefetches are effected the most (in number of percent)}{n/a}
+\resEnergy
+\avgTable{energy3}{run4-3-avg}{Reduce speculation average energy consumption}{* with reExecute}
+\fullTable{energy3}{run4-3-full}{Reduce speculation energy consumption for all benchmarks}
+\toplist{energy3}{run4-3}{Reduce speculation the benchmarks which energy consumption are effected the most (in number of percent)}{n/a}
