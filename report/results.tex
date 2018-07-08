@@ -1,263 +1,70 @@
-\chapter{Evaluation}
+\chapter{Results}
 \label{chap:results}
 
-\begin{table}[b]
-	\begin{centering}
-		\begin{tabular}{ r | r r r }
-			Application & Unmodified & Locks (Normalised) & Atomics (Normalised) \\
-			\hline
-			% \input{tables/lock.tex}
-		\end{tabular}
-		\caption{The number of lock/unlock operations issued. Each pair is
-		counted as one operation.}
-		\label{tab:locks}
-	\end{centering}
-\end{table}
+\THsec{State of the art}{base}
 
-Except from modifying the applications in order to be able to use them with more
-relaxed memory models, we are also interested in how our modifications affect
-the performance characteristics of those applications. There are of course too
-much data that can be collected on the subject, so we decided to focus on basic
-coherence related data. We measure the impact our modifications have on the
-misses in the L1 data cache, the execution time, and the network traffic. We
-also measure the number of locks, barriers, atomic instructions, conditional
-variables, and FSID fences each benchmark uses.
+Here we will analyce the following prefetch policies:
+\begin{itemize}
+	\item noPrefetch
+	\item onExecute
+	\item onCommit
+\end{itemize}
+\resExtime
+\avgTable{extime}{run1-0-avg}{State of the art average execution time}{}
+\fullTable{extime}{run1-0-full}{State of the art execution time for all benchmarks}
+\toplist{extime}{run1-0}{State of the art the benchmarks which execution times are effected the most (in number of procent)}{OnExexcute}
+\resAcc
+\avgTable{L0}{run1-1-avg}{State of the art average number of L0 accsesse}{}
+\fullTable{L0}{run1-1-full}{State of the art number of L0 accsesse for all benchmarks}
+\toplist{L0}{run1-1}{State of the art the benchmarks which number of L0 accsesses are effected the most (in number of procent)}{OnExexcute}
+\resSp
+\avgTable{sp}{run1-2-avg}{State of the art average number of store prefetches}{}
+\fullTable{sp}{run1-2-full}{State of the art number of store prefetches for all benchmarks}
+\toplist{sp}{run1-2}{State of the art the benchmarks which number of store prefetchess are effected the most (in number of procent)}{OnExexcute}
+\resEnergy
+\avgTable{energy}{run1-3-avg}{State of the art average energy consumption}{}
+\fullTable{energy}{run1-3-full}{State of the art energy consumption for all benchmarks}
+\toplist{energy}{run1-3}{State of the art the benchmarks which energy consumption are effected the most (in number of procent)}{OnExexcute}
+\THsec{Techniques to reduce speculation effect}{reduce}
+Here we will analyce all prefetch policies from state of the art \fixme and the following three new onec:
+\begin{itemize}
+	\item OnNonBSpec
+	\item onExecute with Reexecute
+	\item OnNonBSpec with Reexecute
+\end{itemize}
+\resExtime
+\avgTable{extime2}{run2-0-avg}{Reduce speculation average execution time}{}
+\fullTable{extime2}{run2-0-full}{Reduce speculation execution time for all benchmarks}
+\toplist{extime2}{run2-0}{Reduce speculation the benchmarks which execution times are effected the most (in number of procent)}{OnNonBSpec with ReExecute}
+\resAcc
+\avgTable{L02}{run2-1-avg}{Reduce speculation average number of L0 accsesse}{}
+\fullTable{L02}{run2-1-full}{Reduce speculation number of L0 accsesse for all benchmarks}
+\toplist{L02}{run2-1}{Reduce speculation the benchmarks which number of L0 accsesses are effected the most (in number of procent)}{OnNonBSpec with ReExecute}
+\resSp
+\avgTable{sp2}{run2-2-avg}{Reduce speculation average number of store prefetches}{}
+\fullTable{sp2}{run2-2-full}{Reduce speculation number of store prefetches for all benchmarks}
+\toplist{sp2}{run2-2}{Reduce speculation the benchmarks which number of store prefetchess are effected the most (in number of procent)}{OnNonBSpec with ReExecute}
+\resEnergy
+\avgTable{energy2}{run2-3-avg}{Reduce speculation average energy consumption}{}
+\fullTable{energy2}{run2-3-full}{Reduce speculation energy consumption for all benchmarks}
+\toplist{energy2}{run2-3}{Reduce speculation the benchmarks which energy consumption are effected the most (in number of procent)}{OnNonBSpec with ReExecute}
+\THsec{Techniques to filter unecessary prefetches}{filter}
+\avgTable{extime3}{run3-0-avg}{Reduce speculation average execution time}{* with reExecute}
+2 = 4 \\
+8 = 6, 10,16 \\
 
-Since we are not interested in the different coherence protocols but in the
-modification we made to the applications, we only benchmarked the applications
-we modified. This means that we will only include results for Cholesky, Barnes,
-FMM, Ocean (non-contiguous), Radiosity, Raytrace, and Volrend. We will not
-include any of the PARSEC applications, since we did not modify any of them. For
-the SPLASH-2 applications included, we used the recommended input parameters
-\cite{woo1995splash} (more information can be found in Appendix~\ref{chap:par}).
-We ran each application through both the MESI (Section \ref{subsec:mesi}) and
-the VIPS-M (SISD) (Section \ref{subsec:vips}) protocol.  Of course, this
-included all the different versions (Section~\ref{sec:removing}). We did not
-however ran the unmodified version though the VIPS-M protocol, since the results
-would not be correct.  Also, we ran the three FSID modified applications only
-through the FSISD protocol, since they are a special case and FSID fences are
-not recognised by any of the other protocols.
-
-In order to collect accurate measurements of the runtime characteristics of our
-applications, we decided to forego actual runtime measurements and do simulation
-instead. Especially for SPLASH-2, the inputs are too small to be able to
-accurately measure without simulation. We use the Wisconsin GEMS
-\cite{martin2005multifacet} simulator, combined with GARNET network simulator
-\cite{agarwal2009garnet}. We used the network traffic information provided by
-GARNET to estimate the changes in power consumption, since a) network traffic is
-also correlated with cache accesses and misses and b) both of those metrics are
-what affects performance the most when it comes to changes in the memory
-coherence behaviour. We fed the simulator with traces collected from a custom
-pintool, similar to the way described by
-\cite{monchiero2009simulate,nilakantansynchrotrace}. For each application
-and version, we collected traces once, and then ran them multiple times in the
-simulator, with different seeds, in order to account for the deviations in the
-execution of parallel applications. Taking into consideration simulation time
-constraints, we ran each simulation 3 times.  Ideally, we would have liked to
-have used the same trace for all the versions, in order to avoid  the different
-execution paths affecting the results between the versions, but this is not
-possible in our case since there are significant code differences that can not
-be be easily abstracted in the simulator.
-
-The simulations were performed on resources provided by SNIC through Uppsala
-Multidisciplinary Center for Advanced Computational Science (UPPMAX).
-
-\section{Synchronisation Primitives}
-\label{sec:res_sync}
-
-Before we go into the details of how our modifications affect the performance of
-the applications, we need to present how they affected the synchronisation of
-the applications, namely how many more (or less) locks, barriers, atomic
-instructions, and conditional variables are being used. Since, we did not
-introduce any new barriers into the application, we will omit those from the
-results.
-
-Table \ref{tab:locks} shows the number of lock acquire and release operations
-each program issued, in the unmodified, locks, and atomics versions. In parentheses
-there are the same numbers normalised to the unmodified version. Each pair is counted
-only once, i.e. we do not count each acquire and release separately.
-
-We can see that the programs where we introduced the most locks are Barnes, FMM,
-and Radiosity. This partly coincides with the applications where we found data
-races in many places. In both Barnes and FMM, we introduced extra locks during
-the octotree traversal, which explains the results. In Radiosity on the other
-hand, we introduced locks in the task queue, and specifically in the fuzzy
-barrier, which is probably where the bulk of the extra acquire and release
-operations happen.
-
-Another interesting observation is that in the atomics version, we hardly see
-any difference in the lock operations issued, with the exception of Volrend. In
-Volrend, locks were used for simple integer increment/decrement operations.
-Since the same can be achieved with atomic operations, we removed those locks
-and replaced them with atomics. Since those locks appeared in the task queue
-code, we managed to almost eliminate locking from the application. Compared to
-the locks version, we have just $2\%$ of the locks left.
-
-\begin{table}
-	\begin{centering}
-		\begin{subtable}{0.35\textwidth}
-			\begin{tabular}{ r | r }
-				Application & Atomics \\
-				\hline
-				% \input{tables/atomic.tex}
-			\end{tabular}
-			\caption{Atomic operations}
-			\label{tab:atomics}
-		\end{subtable}
-		\begin{subtable}{0.415\textwidth}
-			\begin{tabular}{ r | r r r }
-				& Signal & Broadcast & Wait \\
-				\hline
-				% \input{tables/cond.tex}
-			\end{tabular}
-			\caption{Signal/wait operations}
-			\label{tab:signal}
-		\end{subtable}
-		\begin{subtable}{0.18\textwidth}
-			\begin{tabular}{ r | r }
-				& FSID Fences \\
-				\hline
-				% \input{tables/fsid.tex}
-			\end{tabular}
-			\caption{FSID Fences}
-			\label{tab:fsid}
-		\end{subtable}
-	\end{centering}
-	\caption{Number of atomic (a), signal/wait (b), and FSID (c) operations
-		issued.}
-\end{table}
-
-Table \ref{tab:atomics} presents the number of atomic operations issued by each
-application. Since only the modified atomics version contains any atomic
-operations, we can not compare them with anything. We see, however, that
-Cholesky, followed by Radiosity, are the two applications that issue the most
-atomic operations. On the other hand, Ocean and Raytrace issue none to
-very few. 
-
-Similarly, table \ref{tab:signal} presents the number of signal/wait (i.e.
-conditional variables) operations issued. Obviously, only Barnes, Cholesky, and
-FMM have any of these operations, since these are the only applications we
-introduced them to. There are not really any conclusions we can draw from these
-numbers, but we can see that Cholesky is much more likely to have to wait for
-some data, when compared to the other two. As a matter of fact, Barnes only ends
-up waiting a few times, which means that there is not much contention in that
-part.
-
-Finally, table~\ref{tab:fsid} presents the number of FSID fences encountered
-during execution. This includes just the explicit FSID fences and not all the
-FSID regions caused by locked critical sections.
-
-\section{Performance Characteristics}
-\label{sec:res_perf}
-
-\begin{figure}
-	% \includegraphics[width=\textwidth]{graphs/l1d_cache_misses}
-	\caption{Normalised Data L1 cache misses for all the applications.}
-	\label{fig:res_l1d_misses}
-\end{figure}
-
-Figure~\ref{fig:res_l1d_misses} presents the number of L1d (``d'' for ``data'')
-misses for the different versions and coherence protocols. For the MESI
-protocol, we see that on average the additional locks increase the number of
-misses slightly, but most applications are not affected too much. Similarly, the
-introduction of atomic operations affects the applications little, with the
-average being almost the same as the unmodified version. 
-
-However, for the VIPS-M protocol, the results are quite different. Cholesky and
-Volrend have much less misses for the locked version, compared to the atomics
-one. In Cholesky, this can be explained by the fact the instead of the efficient
-conditional variables, in the atomics version we utilise spinloops, which
-constantly cause the cache to self-invalidate all its data. Volrend on the other
-hand, does not utilise any conditional variables. Looking at the simulator
-results, the atomics version of Volrend performs self-invalidations roughly 5
-times more than the locks version.  This can be explained by the fact that
-Volrend uses multiple locks in a tight loop, which increases the contention.
-Atomics on the other hand suffer from much less contention, and thus can be
-executed much more often (before the variable gets the correct value and the
-loop is terminated). We can verify this theory by looking at the number of locks
-(8K) vs the number of atomic operations in the two versions (51K)
-(Tables~\ref{tab:locks}, \ref{tab:atomics}). The rest of the applications
-exhibit the expected behaviour, with the atomics versions performing similarly
-or better than the locks one. We expected this because atomic operations, unlike
-locks, do not need to use both acquire and release at the same time. This means
-that, if for example we just want to store a variable, there is no need to
-self-invalidate all our data, like a locked critical section would do.
-
-Finally, we have the FSISD protocol. Generally, it performs similarly or better
-than the locked version for the applications that did not require any additional
-FSID fences. For the three applications that did require fences, Barnes, FMM,
-and Radiosity, it performs worse than the SISD protocol.
-
-We also measured the amount of misses in the L2 cache, but we found that it is
-dominated by the protocol used, rather than the application version.  Since we
-are not interested in comparing the different protocols, we omitted these
-results from here. It is, however, worth mentioning that the number of L2 misses
-is very small compared to the L1. On average, the L2 misses are less than 470
-times the L1 misses, but this number varies greatly with each application.
-
-
-\begin{figure}
-	% \includegraphics[width=\textwidth]{graphs/exec_time}
-	\caption{Normalised execution times for all the applications.}
-	\label{fig:res_time}
-\end{figure}
-
-Figure~\ref{fig:res_time} presents the simulated execution times for all the
-applications. We see here, that even for applications such as Radiosity, where
-the number of L1d misses sky-rocketed, the execution time is much less affected.
-On the contrary, Radiosity exhibits a lower execution time for the locks
-version. So does Cholesky. This was expected of Cholesky, since in the locks
-version we have replaced an expensive spinloop with a much more efficient
-conditional variable. From table~\ref{tab:signal} we can see that Cholesky
-utilises the \icode{wait} function quite often, which means that we have avoided
-a lot of spinloop iterations. This presumption is further reinforced by the fact
-that the atomic version (which utilises just a spinloop) performs much worse,
-both for MESI and for VIPS-M. At the same time, the other two applications that
-we introduced conditional variables to, Barnes and FMM, do not utilise them as
-much and thus no speed improvement is visible.  Overall, we see that there is a
-correlation between L1d misses and execution time.
-
-Interestingly enough, Radiosity performs much better with the locks even though
-we have not introduced any conditional variables and the VIPS-M version actually
-runs with more L1d misses. The explanation we came up with is that the fuzzy
-barrier (that we fixed --- this is where the bug was found in Radiosity) works
-much better with the locks, rather than without.  We see from the simulation
-results that the locked version spends much less time waiting on barriers than
-the other two. This could mean that the work is balanced much better and the all
-tasks are finished faster. In order to verify this theory, we ran the unmodified
-version again, but this time with the barrier bug fixed (with locks). The
-results matched very closely to the locks version, at least as far as the
-execution time is concerned. The atomics version also spends more time at the
-barriers, but it also has less misses, which might explain why it runs better
-than the unmodified one but worse than the locks one. The VIPS-M version also
-runs better (still worse than the modified MESI versions though), in spite of
-the increased number of L1d misses, which fits with our theory that the
-performance improvement is not something coherence related.
-
-\begin{figure}
-	% \includegraphics[width=\textwidth]{graphs/power}
-	\caption{Normalised network traffic for all the applications.}
-	\label{fig:res_power}
-\end{figure}
-
-Finally, we have the network traffic, pictured in figure~\ref{fig:res_power}.
-Excect from the network congestion itself, network traffic is also closely
-correlated with the power consumption caused by changes in the coherence
-protocol and synchronisation used.  We can see that the network traffic follows
-closely the L1d cache misses, which was expected, since the misses cause a lot
-of network traffic. The cases where the network traffic is noticeably higher
-correlate with the cases where the L1d misses are also high.  However, the
-differences between the different versions are not equally pronounced. On
-average, we can see that, for MESI, the locks version increases the network
-traffic very slightly while the atomics version maintains it to almost the same
-level as the baseline. On the contrary, for VIPS-M, the network traffic is lower
-than the baseline, and at the same time, the difference between the locks and
-the atomics versions is almost non-existent. This is due to different
-applications exhibiting vastly different behaviours, and in the end averaging
-each other out.
-
-As for the network traffic for the FSISD protocol, we see that it is similar or
-lower than the VIPS-M protocol, but only for the applications we did not need to
-add explicit fences. On average, because of the bad performance of the
-applications that did require explicit FSID fences, it is slightly worse than
-VIPS-M, and almost equal to MESI.
+\fullTable{extime3}{run3-0-full}{Reduce speculation execution time for all benchmarks}
+\toplist{extime3}{run3-0}{Reduce speculation the benchmarks which execution times are effected the most (in number of procent)}{OnNonBSpec with ReExecute and SameCaceLine}
+\resAcc
+\avgTable{L03}{run3-1-avg}{Reduce speculation average number of L0 accsesse}{* with reExecute}
+\fullTable{L03}{run3-1-full}{Reduce speculation number of L0 accsesse for all benchmarks}
+\toplist{L03}{run3-1}{Reduce speculation the benchmarks which number of L0 accsesses are effected the most (in number of procent)}{OnNonBSpec with ReExecute and SameCaceLine}
+\resSp
+\avgTable{sp3}{run3-2-avg}{Reduce speculation average number of store prefetches}{* with reExecute}
+\fullTable{sp3}{run3-2-full}{Reduce speculation number of store prefetches for all benchmarks}
+\toplist{sp3}{run3-2}{Reduce speculation the benchmarks which number of store prefetchess are effected the most (in number of procent)}{OnNonBSpec with ReExecute and SameCaceLine}
+\resEnergy
+\avgTable{energy3}{run3-3-avg}{Reduce speculation average energy consumption}{* with reExecute}
+\fullTable{energy3}{run3-3-full}{Reduce speculation energy consumption for all benchmarks}
+\toplist{energy3}{run3-3}{Reduce speculation the benchmarks which energy consumption are effected the most (in number of procent)}{OnNonBSpec with ReExecute and SameCaceLine}
+\THsec{Techniques for timelines}{timelines}

@@ -6,6 +6,7 @@
 \usepackage{url}
 \usepackage[utf8]{inputenc}
 \usepackage{newfloat}
+\usepackage{float}
 \usepackage{todonotes}
 % pdfborderstyle to fix the bounding rectangle
 \usepackage[pdftex,hidelinks]{hyperref}
@@ -47,6 +48,7 @@
 \usepackage{listings}
 \usepackage{pdfpages}
 
+
 % -------------------------------------------------------------
 % Chapter Title
 % -------------------------------------------------------------
@@ -74,6 +76,8 @@
 \newcommand{\THstage}[1]{\subsubsection{#1}\label{subsubsec:#1}}
 \newcommand{\THpar}[2]{\paragraph{#1}\label{par:#2}}
 \newcommand{\THnewWord}[1]{\textbf{#1}}
+
+\input{results/reslutsMacros}
 % -------------------------------------------------------------
 %  Source Code
 % -------------------------------------------------------------
@@ -159,6 +163,7 @@
 \bibliography{thesis}
 \begin{appendices}
 	\input{appendix.tex}
+
 	% \listoffigures
 	% \listoftables
 \end{appendices}

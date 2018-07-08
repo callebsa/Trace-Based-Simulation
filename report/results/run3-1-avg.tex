@@ -1,0 +1,11 @@
+\begin{tabular}{ l|ccc }
+ & NoPrefetch & OnExecute & OnCommit\\ \hline
+L1 accsesses & 76.6\% & 119.0\% & 100.0\%\\ \hline
+\hline
+ & OnNonBSpec + reexecute & OnNonBSpec* + sameCL & PCNecessery 4*\\ \hline
+L1 accsesses & 111.5\% & 110.7\% & 106.4\%\\ \hline
+\hline
+ & PCNecessery 4* + sameCL & PCNecessery 8* & PCNecessery 8* + sameCL\\ \hline
+L1 accsesses & 105.8\% & 106.4\% & 105.8\%\\ \hline
+\end{tabular}
+

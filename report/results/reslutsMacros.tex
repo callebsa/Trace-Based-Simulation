@@ -1,0 +1,77 @@
+\newcommand{\resExtime}[0]{\THsub{Execution time}{resCycles} The execution time is mesured in cycles.}
+
+\newcommand{\resAcc}[0]{\THsub{L0 accsesses}{resAcc} The number of accsesses to cache L0 is mesured here.}
+
+\newcommand{\resSp}[0]{\THsub{Store prefetches}{resSp} The number of store prefetches is mesured here.} 
+
+\newcommand{\resEnergy}[0]{\THsub{Energy consumtion}{resEnergy} The energy consumtion is here mesured in $nJ$.} 
+
+
+\newcommand{\avgTable}[4]{
+\begin{figure}[H]
+\centering
+\includegraphics[width=13cm]{results/#2.png}
+\input{results/#2}
+\emph{#4}
+\caption{#3}
+\label{img:avg#1}
+\end{figure}
+}
+
+\newcommand{\fullTable}[3]{
+\begin{figure}[H]
+\centering
+\includegraphics[width=13cm]{results/#2.png}
+A table over this data can be find in Appdix \fixme 
+\caption{#3}
+\label{img:full#1}
+\end{figure}
+
+}
+
+\newcommand{\toplist}[4]{
+	\begin{table}[H]
+\centering
+
+\emph{The nunbers are base on a comparation between OnCommit and #4} \\ 
+\begin{tabular}{ |l|l| }
+\hline
+\multicolumn{2}{|c|}{Top five} \\
+  \hline
+banchmarch & differance \\ \hline
+\input{results/#2-top}
+\end{tabular}
+\quad
+\begin{tabular}{ |l|l| }
+\hline
+\multicolumn{2}{|c|}{Bottom five} \\
+  \hline
+banchmarch & differance \\ \hline
+\input{results/#2-bottom}
+\end{tabular}
+\\
+\emph{The differance are between the lowest and highest value and are given in procent units.}
+\caption{#3}
+\label{top:top#1}
+\end{table}
+
+}
+
+\newcommand{\fullResult}[3]{
+		\begin{table}[H]
+\centering
+\begin{adjustwidth}{-3cm}{}
+\begin{small}
+\begin{tabular}{ |l||l|l|l|l|l|l|l|l|l|}
+\hline
+
+\input{results/#1}
+
+\hline
+\end{tabular}
+\end{small}
+\end{adjustwidth}
+\caption{#2}
+\label{app:#3}
+\end{table}
+}
