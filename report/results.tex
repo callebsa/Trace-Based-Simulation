@@ -14,77 +14,149 @@ Here we will analyze the following prefetch policies:
 This table concludes very well the impact on the run time of prefetch. Using any type of prefetch policy will roughly cut the runtime with a third (for the benchmarks that was used here). This tell us once for all that waiting on data to be brought in to the L0 cache for a store instruction takes time. But it is not really just to prefetch how aggressively you want, cause if we compare OnExecute and OnCommit we see that OnExecute is 1.9 percent units slower. OnExecute issue there prefetch earlier and will therefore prefetch more data that later will turn out to not be used, unnecessary prefetch slows down the execution and most therefore be minimized.
 \fullTable{extime}{run1-0-full}{State of the art execution time for all benchmarks}
 \toplist{extime}{run1-0}{State of the art the benchmarks which execution times are effected the most (in number of percent)}{OnExexcute}
+In the above table we see the number of percent units in times of number of cycles for a particular benchmark when comparing OnExecute and OnCommit. Gcc 3 and gobmk 4 gain over 20 percentage in reduced number of cycles while running OnCommit (being less aggressive with the prefetch). But on the other hand OnCommit is increasing the number of cycles for omnetpp and castusADM with twenty percent unit. It is hard given the provided measurement here and in the following subsections why a certain benchmark gains or loses preformens (reduced number of cycles). I believe that this can be explained as how well the execution is predictable a predictable benchmark will be help by early prefetch, OnExecute. But a less predictable benchmark using OnExecute will west time on bringing in unnecessary data.
 \resAcc
+
 \avgTable{L0}{run1-1-avg}{State of the art average number of L0 accesses}{}
 This is one interesting graph which shoes us the amount of unnecessary work that is caused by prefetching. NoPrefetch does, as the name says, no prefetches which means that all L0 accesses are caused by needed data for store instructions that are to be executed in the point in time. Everything above 76.6 \% are unnecessary work which will waste energy. OnExecute does as expected more accesses then OnCommit since it prefetches early and more speculative.
 
 \fullTable{L0}{run1-1-full}{State of the art number of L0 accesses for all benchmarks}
 \toplist{L0}{run1-1}{State of the art the benchmarks which number of L0 accesses are effected the most (in number of percent)}{OnExexcute}
+The table shows us that OnCommit decreases the L0 accesses for all but two of the benchmarks and difference can be over 90 percent units (bzip2 1 and bizp2 2). Which shows once again that an early prefetch trigger unneeded accesses. It is interesting that spolex has more accesses for OnExecute then OnCommit and there might something to investigate further.  
 \resSp
 \avgTable{sp}{run1-2-avg}{State of the art average number of store prefetches}{}
-The number of store prefetches confirms the beehives and conclusions drawn from the tables over execution times and L0 accesses. NoPrefetch does none store prefetch and OnExeute does most.
+The number of store prefetches confirms the behaves and conclusions drawn from the tables over execution times and L0 accesses. NoPrefetch does none store prefetch and OnExeute does most. OnCommit lays in between, 78.5 percent units below OnCommit, these is also what to expect since OnExecute is more speculative then OnCommit.  
 \fullTable{sp}{run1-2-full}{State of the art number of store prefetches for all benchmarks}
 \toplist{sp}{run1-2}{State of the art the benchmarks which number of store prefetches are effected the most (in number of percent)}{OnExexcute}
+OnExecute issues more store prefetches then OnCommit for all benchmarks but bwaves who has the same number of prefetches for OnCommit and OnExecute. It is hard to explain why bwaves issues more store prefetches on OnCommit and there might be something to look into as a future work. 
 \resEnergy
 \avgTable{energy}{run1-3-avg}{State of the art average energy consumption}{}
+This graph shows how much we need to pay in terms of energy for the reducement of cycles. First of all we see that NoPrefetch consumes least amount of energy while OnExecute consumes most. We are paying for unnecessary prefetches. It is also worth nothing that if using OnExecute instead of OnCommit we decries the number of cycles by 1.9 percent units but the energy consumption increases with 33.11 percent units. But having some kind of prefetch seems to coast less then it tests. Using OnCommit instead of NoPrefetch burns 12.57 percent units more energy but that gives a speed up with 47.5 percent units. A prefetch policy is able to pay of in decreased energy consumption but if getting to far in prefetching the loss in terms of increased energy consumption can be huge.
 \fullTable{energy}{run1-3-full}{State of the art energy consumption for all benchmarks}
 \toplist{energy}{run1-3}{State of the art the benchmarks which energy consumption are effected the most (in number of percent)}{OnExexcute}
+Using OnCommit rather the OnExexute save a lot of energy for many benchmarks. Finding bizp2 in the lead of saving energy is no supprices since it in the lead then it comes to decreasing prefetches and L0 accsesse. This correlation will also explain why milc is incresing a bit in energy consumption while using OnCommit instead of OnExecute. A longer execution time will of course also increase the energy consumption.
+
+\subsection{Conclusion}
+All three prefetch polices are not a result of this thesis and therefore all will be kept as  a reference when now adding more filters on top of this in order to be more specific in when to prefetch or not.
 
 \THsec{Techniques to reduce speculation effect}{reduce}
-Here we will analyce all prefetch policies from state of the art \fixme and the following three new onec:
+Here we will analyze all prefetch policies from state of the art \fixme and the following three new onec:
 \begin{itemize}
 	\item OnNonBSpec
-	\item onExecute with Reexecute
+	\item OnExecute with Reexecute
 	\item OnNonBSpec with Reexecute
 \end{itemize}
 \resExtime
 \avgTable{extime2}{run2-0-avg}{Reduce speculation average execution time}{}
+OnNonBSpec seams to be the fastest one 2,3 \% faster then OnCommit. It makes a different to not prefetch stores that are effected by a branch, the branch predictions seams to be false in most cases. We also see that the Reexecute filter does not effect ethere OnExecute nor OnNonBSpec.
 \fullTable{extime2}{run2-0-full}{Reduce speculation execution time for all benchmarks}
 \toplist{extime2}{run2-0}{Reduce speculation the benchmarks which execution times are effected the most (in number of percent)}{OnNonBSpec with ReExecute}
+The benchmarks that befits the most from OnNonBSpec with reexecution does it with just 1.91 percent units and the one that losses most losses over 10 percent units (cactusADM and omnetpp). A guess is that the variation between the benchmark is the number of stores that are effected by a branch.
 \resAcc
 \avgTable{L02}{run2-1-avg}{Reduce speculation average number of L0 accesses}{}
+OnNonBSpec does 6.5 \% less L0 accesses then OnExectue. ReExecute decreases the L0 accesses with 1.4 \% used on OnExecute and 1 \% used on OnNonBSpec. The difference can be explain be OnNonBSpec removing some of the prefetches that ReExecute also will remove. The total numbers tells us that OnNonBSpec with ReExecute as the lest number of L0 accesses apart from OnCommit with 111.5 \% against 117.6 \% (OnExectue with ReExecute). 
 \fullTable{L02}{run2-1-full}{Reduce speculation number of L0 accesses for all benchmarks}
 \toplist{L02}{run2-1}{Reduce speculation the benchmarks which number of L0 accesses are effected the most (in number of percent)}{OnNonBSpec with ReExecute}
+The table above is pretty similar to \fixme were OnCommit and OnExecute was compared. We see, in this table that OnBSpec beats OnCommit for all but two benchmarks with up to over 90 percent units. 
 \resSp
 \avgTable{sp2}{run2-2-avg}{Reduce speculation average number of store prefetches}{}
+OnNonBSpec decerasses the number of store perfetch by 29.1 \% compared with OnExecute. ReExecute are also decresing then number of prefetches with 5.9 \% used on OnExecute and 3.8 used on OnNonBSpec. The difference can be explain be OnNonBSpec removing some of the prefetches that ReExecute also will remove. The total numbers tells us that OnNonBSpec with ReExecute as the lest number of L0 accesses apart from OnCommit (and NoPrefetch) with 145.6 \% against 172.6 \% (OnExectue with ReExecute).  
 \fullTable{sp2}{run2-2-full}{Reduce speculation number of store prefetches for all benchmarks}
 \toplist{sp2}{run2-2}{Reduce speculation the benchmarks which number of store prefetches are effected the most (in number of percent)}{OnNonBSpec with ReExecute}
+The table is very much alike \fixme were OnCommit and OnExecute was compared. The benchmarks in both the top and bottom five are the same and lays all at the same place then comparing with the table above. The values differs some a bit is bit more then in the other table and some a bit less.
 \resEnergy
+The first to notise here is that OnNonBSpec burns 25.93\% less energy then OnExecute and ReExecute decress the energy with 0.89\% used on OnExecute and 0.78 \% used on OnNonBSpec. OnNonSPec with ReExecute gets 106.4\% which is 6.4 \% more then OnCommit.  
 \avgTable{energy2}{run2-3-avg}{Reduce speculation average energy consumption}{}
 \fullTable{energy2}{run2-3-full}{Reduce speculation energy consumption for all benchmarks}
 \toplist{energy2}{run2-3}{Reduce speculation the benchmarks which energy consumption are effected the most (in number of percent)}{OnNonBSpec with ReExecute}
-\THsec{Techniques to filter unecessary prefetches}{filter}
+By compareing the above table by the one list the top and bottom five in a comparation between OnCommit and OnExecute, we see that all places in the table here in both top and bottom has lower digits which is not suprisingly since we over all burns more energy OnCommit then OnNonBSpec with ReExecute.
+
+\subsection{Conclusion}
+OnNonBSpec with ReExecute is the fastest on with a speed up of 2.4 percent compared to OnCommit but it burns 6.4 percent more energy. The question to ask is if an energy increase with 2.67 \% is worth a speed up of 1 \%. It is likely to believe that the answer will differ with type of machine and application. OnNonDSpec with ReExecute will kept to gather with the three basic polices as the best for now. The new filters to be tested will all be put on top of it.
+\THsec{Techniques to filter necessary prefetches}{filter}
+In this section sameCachLine and PCNessary (PCNess) is introduced. The digit after PCNessery denotes the buffer size, the number off entries is two to the power of the digit. Test have been conducted with PCNessery 2, 4, 6, 8, 10 and 16 but it turned out that 2 behaves the same as 4 and 8 as 6, 10 and 16 in all four categories (Execution time, L0 accesses, number of prefetch and energy consumption). Therefore, to reduce the number of configurations in the graphs of this section we only use buffer sizes 2 and 8. The new configurations, based upon OnNonBSPec with ReExecute, are:
+\begin{itemize}
+	\item OnNonBSpec with sameCL
+	\item PCNessery 4
+	\item PCNessery 4 with sameCL
+	\item PCNessery 8
+	\item PCNessery 8 with sameCL
+\end{itemize}
+\resExtime
 \avgTable{extime3}{run3-0-avg}{Reduce speculation average execution time}{* with reExecute}
-2 = 4 \\
-8 = 6, 10,16 \\
+SameCacheLine (sameCL) have no impact on OnNonBSpec (the best from \fixme) and a little, just 0,1 \%. A hypothesis for that is that there already are  that loading the same cache line twice in a short manner of time will result in not loading it the second time since the cache line are all ready in the L0 cache and the over head to come to that conclusion is not that much. Therefore blocking the second prefetch of a cache line a bit earlier will not have a big impact at least on the execution time. 
+\\ \\ 
+PcNess 4 and 8 have the same numbers 98.1 \% without sameCacheLine and 98.0 \% without. This can be compared with OnNonBSpec with 97.6 \%. Iterate over a buffer as in PCNessery takes time so the advantage of doing that have to pay of more in runtime otherwise with end up with a slowdown as here. 
 
 \fullTable{extime3}{run3-0-full}{Reduce speculation execution time for all benchmarks}
 \toplist{extime3}{run3-0}{Reduce speculation the benchmarks which execution times are effected the most (in number of percent)}{OnNonBSpec with ReExecute and SameCaceLine}
+There are a compartion between OnCommit and OnNonBSpec with ReExecute and SameChachLine since its the best one in term for execution time among the new once for this section. The must numbers in doth top and bottom are higher here then in the comparation with OnNonBSpec with (only) ReExecute this tells us that SameChacheLine can ave a nedive inpackt on the runtime for a few benchmark but it improves on the majority of the benchmark. The improvement on the improved once are smaller then the worse for the worsen once. 
 \resAcc
 \avgTable{L03}{run3-1-avg}{Reduce speculation average number of L0 accesses}{* with reExecute}
+PCNecessary 4 and 8 have the same number of L0 accesses. SameCacheLIne improves both on OnNonBSpec with 0.8 \% and on both PCNecessary (4 and 8) with 0.6 \%. PCNecessary (4 and 8) with SameCachheLine become the closest on to OnCommit whit its 105.8\%.
 \fullTable{L03}{run3-1-full}{Reduce speculation number of L0 accesses for all benchmarks}
 \toplist{L03}{run3-1}{Reduce speculation the benchmarks which number of L0 accesses are effected the most (in number of percent)}{OnNonBSpec with ReExecute and SameCaceLine}
+
 \resSp
 \avgTable{sp3}{run3-2-avg}{Reduce speculation average number of store prefetches}{* with reExecute}
+The Store prefetch shows roughly the same thing as L0 accsesses \fixme. PCNessary (4 and 8) gives the same percentage without, 125.7 \%, and with SameChaheLine, 123.4 \%, a difference with 2.3 \%. SameCacheLine improves also OnNonBespec with 3.2 \%. PCNessary (4 and 8) with SameCacheLine is once again closest to OnCommit with its 123.4 \%.   
 \fullTable{sp3}{run3-2-full}{Reduce speculation number of store prefetches for all benchmarks}
 \toplist{sp3}{run3-2}{Reduce speculation the benchmarks which number of store prefetches are effected the most (in number of percent)}{OnNonBSpec with ReExecute and SameCaceLine}
 \resEnergy
 \avgTable{energy3}{run3-3-avg}{Reduce speculation average energy consumption}{* with reExecute}
+There is no suprese that the energy comparation looks the same as L0 accsess and prefetches. PCNessary (4 and 8) has the same precentages, without, 103.85 \%, and with SameCacheLine it is decressed with 0.49 \% to 103.36 \%. OnNonBSpec gets down with 0.45 \% to 105.95 \% with SameCacheLine but it is not enought to beat PCNessery with SameCacheLine.
 \fullTable{energy3}{run3-3-full}{Reduce speculation energy consumption for all benchmarks}
 \toplist{energy3}{run3-3}{Reduce speculation the benchmarks which energy consumption are effected the most (in number of percent)}{OnNonBSpec with ReExecute and SameCaceLine}
-\THsec{Techniques for timelines}{timelines}
 
+\subsection{Conclusion}
+SameCacheLine have no effect at all on the execution time but it saves energy by removing L0 accesses and prefetches, therefore SameCachLine should be added to the currently best policy. PCNessary gives the same Runtime and burns the same amount of energy for both sizes 4 and 8. It is chipper and more efficient to have a buffer with $2^4=16$ entries then $2^8=256$ entries and therefore we will look more into how PCNessery 4 does compared to OnNonBSpec, both with SameCacheLine:
+
+	\begin{table}[H]
+\centering
+
+\begin{tabular}{ |l|l|l| }
+\cline{2-3}
+\multicolumn{1}{ c| }{} 
+& Execution time & Energy  \\  \hline
+PCNessery 4& 98.0 & 103.36  \\  \hline
+OnNonBSPec & 97.6 & 105.92  \\  \hline
+Difference & 0.4 & 2.56  \\  \hline
+\end{tabular}
+\caption{Comparation between PCNessery 4 and OnNonBSpec, both with SameCacheLine. }
+\label{quickcompPC4vsONBS}
+\end{table}
+In the above table \ref{quickcompPC4vsONBS} with see that  OnNonBSpec is fastest but PCNessary 4 burns less energy. So the choice is based on whats the biggest concern in a given setting time or energy. When if PCNessary 4 is a bit slower 0.4 \% the energy savings is mush higher therefore should PCNessary 4 with SameCacheLine be considered the best policy of this section and be together with the basic three the once to be taken to the next section. 
+
+\THsec{Techniques for timelLiness}{timelines}
+In this, last section we add the following policies which all build upon PCnessary (4 or 8) with ReExecute and SameCacheLine:
+\begin{itemize}
+	\item PCNessaryTimeliness2 4
+	\item PCNessaryTimeliness2 8
+	\item PCNessaryTimeliness3 4
+	\item PCNessaryTimeliness3 8
+\end{itemize}
+\resExtime
+\avgTable{sp3}{run4-0-avg}{Reduce speculation average number of cycles}{* with reExecute and SameCacheLine}
+PCNessaryTimeliness2 (4 and 8) gets the same runtime as PCNessary 4, 98.0\%. PCNessaryTimeliness3 gets longer runtimes, 99.5\% for size 4 and 98.7\% for size 8, itreate over a bigger buffer takes more time for PCNessaryTimeliness3.
 \fullTable{extime3}{run4-0-full}{Reduce speculation execution time for all benchmarks}
-\toplist{extime3}{run4-0}{Reduce speculation the benchmarks which execution times are effected the most (in number of percent)}{n/a}
+\toplist{extime3}{run4-0}{Reduce speculation the benchmarks which execution times are effected the most (in number of percent)}{PCNecessary 4 with reExecute and SameCacheLine}
 \resAcc
-\avgTable{L03}{run4-1-avg}{Reduce speculation average number of L0 accesses}{* with reExecute}
+\avgTable{L03}{run4-1-avg}{Reduce speculation average number of L0 accesses}{* with reExecute and SameCacheLine}
+PCNessaryTimeliness2 (4 and 8) gets the same number of L0 accesses as PCNessary 4, 105.8\%. PCNessaryTimeliness3 (4 an 8) are getting the same precentages, 100.1\%, pritty close to OnCommit, 100.0\%
 \fullTable{L03}{run4-1-full}{Reduce speculation number of L0 accesses for all benchmarks}
-\toplist{L03}{run4-1}{Reduce speculation the benchmarks which number of L0 accsesss are effected the most (in number of percent)}{n/a}
+\toplist{L03}{run4-1}{Reduce speculation the benchmarks which number of L0 accesses are effected the most (in number of percent)}{PCNecessary 4 with reExecute and SameCacheLine}
 \resSp
-\avgTable{sp3}{run4-2-avg}{Reduce speculation average number of store prefetches}{* with reExecute}
+\avgTable{sp3}{run4-2-avg}{Reduce speculation average number of store prefetches}{* with reExecute and SameCacheLine}
+Once again PCNessaryTimeliness2 (4 and 8) gets the same number of L0 accesses as PCNessary 4, 123.4\% and PCNessaryTimeliness3 lays close to OnCommit, 100.6\% for size 4 and 100.3\% for size 8.
 \fullTable{sp3}{run4-2-full}{Reduce speculation number of store prefetches for all benchmarks}
-\toplist{sp3}{run4-2}{Reduce speculation the benchmarks which number of store prefetches are effected the most (in number of percent)}{n/a}
+\toplist{sp3}{run4-2}{Reduce speculation the benchmarks which number of store prefetches are effected the most (in number of percent)}{PCNecessary 4 with reExecute and SameCacheLine}
 \resEnergy
-\avgTable{energy3}{run4-3-avg}{Reduce speculation average energy consumption}{* with reExecute}
+\avgTable{energy3}{run4-3-avg}{Reduce speculation average energy consumption}{* with reExecute and SameCacheLine}
+Once again PCNessaryTimeliness2 (4 and 8) gets the same number of L0 accesses as PCNessary 4, 103.36\%. But PCNessaryTimeliness3 8 consums 0.22 \% less energy the OnCommit and is therefore the prefetch policy that burns less energy (except NoPrefetech) with its 99.88 \%.     PCNessaryTimeliness3 4 cunsums slightly more energy than OnCommit  100.08 \%.
+  
 \fullTable{energy3}{run4-3-full}{Reduce speculation energy consumption for all benchmarks}
-\toplist{energy3}{run4-3}{Reduce speculation the benchmarks which energy consumption are effected the most (in number of percent)}{n/a}
+\toplist{energy3}{run4-3}{Reduce speculation the benchmarks which energy consumption are effected the most (in number of percent)}{PCNecessary 4 with reExecute and SameCacheLine}
+
+
+\subsection{Conclusion}
+PCNessaryTimeliness2 (4 and 8) are out of the game since it preforms exactly the same as PCNecessary 4 in all measured aspects and are therefore out of the game. PCNessaryTimeliness3 8 are interesting since it consumes less energy then OnCommit and it is faster the it. It is just 0.7 \% slower then PCNessery 4 but burns 3.58 \% more energy, therefore PCNessaryTimeliness3 8 are the best prefetch policy proposed in this thesis.

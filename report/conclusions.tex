@@ -1,0 +1,12 @@
+\chapter{Conclusion}
+\label{chap:conclusion}
+
+\paragraph{State of the art -} Having some prefetch policy in place cuts a third of the exection time and increases the energy consumption by just 12.5\%. While comparing early prefetch, OnExecute, with late, OnCommit, one can see that the later one increases runtime with a bit over one percent but energy with 33 \%. 
+
+\paragraph{Techniques to reduce speculation effect -} OnNonBSpec with ReExecute is the fastest (97.6 \%) on with a speed up of 2.4 percent com-
+pared to OnCommit but it burns 6.4 percent more energy. Give that OnNonBSpec with ReExecute was the best on this point. 
+
+\paragraph{Techniques to filter necessary speculations -} The SameChechLine filter was proved to have no impact on runtime but saves energy and are therefor used together with ReExecute on all new (from this point) policies. OnNonBSpec are still the fastest but PCNessery4 are more energy efficient, taken 0.4\% more time for 2.56\% less energy.
+
+\paragraph{Techniques for timeliness -} After considering the final techniques introduced by this thesis OnNonBSpec with ReExecute and SameCacheLine are still the fastest one with 97.6\% to the energy coast of 105.95\%. On the Energy PCNessaryTimLiness3 8 with ReExecute and SameCacheLine takes the lead with 99.88\% that is lower then OnCommit (100.00\%) the only policy that burns less is NoPrefetch (87.43\%). In terms of runtime PCNessaryTimLiness3 8 with ReExecute and SameCacheLine gets 98.7\% which is 1.1\% slower then  OnNonBSpec with ReExecute and SameCacheLine  but it instead burns 6.17\% more energy. So if combining execution time and energy PCNessaryTimLiness3 8 with ReExecute and SameCacheLine must be the prefetch policy to use.
+

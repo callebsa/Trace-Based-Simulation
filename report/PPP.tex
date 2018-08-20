@@ -1,0 +1,51 @@
+\chapter{Proposed Prefetch Policies}
+\label{chap:ProposedPrefetchPolicies}
+
+\section{Techniques to reduce speculation effect} 
+
+\subsection{OnNonBranchSpecultive}
+This alternative is proposed by Albert Ros Bardisa (the supervisor of this master
+thesis) and has not been implemented nor tested in a broader setup, it is only implemented in the GEMS simulator 2.2.3. \fixme The alternative can be seen of as taken the
+best of OnExecute 2.1.2 \fixme and OnCommit 2.1.2. \fixme If you have a load instructive that are
+effected by a branch we will wait until the outcome of the branch is known, to make
+sure that all data we bring in to the L1 cache will be needed. We act as OnCommit. If
+the load is not effected by a branch we will then benefit on the performance by acting
+like OnExecute 2.1.2. \fixme The difference between OnNonBSpeculative and OnCommit
+is that the prefetch will, if not effected by a branch, be issued upon arriving to the
+ROB, we earn the time the instruction is waiting in the ROB if we compare with
+OnCommit.
+\subsection{ReExecute}
+This is not a fully prefetch policy, it is more of a question on how to handle ReExcecution of instruction. Here we compare between issue a prefetch on ReExececution
+or not. If the ReExecution happens close in time to the first execution then the data
+for that store is likely to be in L0 and/or in another cache hence prefetching again
+will not be necessary and thereby just a waste of energy. Reasons for reExecution can
+either be that a load follows a store with unknown address that is later computed to
+the same as the store. In this case the load has to be reExecuted to get the data that
+is updated by the previous store. Another reason can be that the load in question has
+a previously not resolved load. If the load is invalidated or evicted from the cache,
+then the load (and all the next instructions) have to be ReExecuted.
+
+\section{Techniques to filter necessary speculations} 
+ \subsection{PCNessery}
+The idea for PCNrcessery comes from branch predictor, which given the previous observations on whether a branch is taken or not predicts if it is going to be taken or not. The prediction is based on information on the target PC (the address of the target instruction), are branches to this instruction usually taken or not. If its likely to be taken the predictor predicts that it is going to be take this time as well on the CPU are fed it instructions from the target of the branch. If it predicted not to be taken the CPU get the instructions that are after the branch. \\ \\
+PCNecessery keeps track of the memory addresses of the stores instead. PCNecessery uses a buffer, different buffer sizes has been implemented as you soon will see, in which each entry maps to a number of memory address the more entries the less addresses maps to it. The rest you get when dividing the address (interpreted as a number) with the number of entries. That means that two adjacent memory addresses maps to different entries.\\ \\
+
+
+Every entry contains an integer that can take values between 0 and 3 and it is preset to 2. If seeing a store from a memory address mapping to an entry with a number grater then one we prefetch. If a store instruction hits in the L0 cache (the data was already there) the number in the corresponding buffer entry is (if it is not 0) decreased by one, making it less likely to be prefetches next time. If a store misses in the LO cache (the data is not jet there) the number in the  corresponding buffer entry is (if it is not 3) increased by one, making it more likely to be prefetches next time. \\ \\
+
+
+To evaluate the impacted of the buffer size. Different sizes was implemented and named PCNessery X where X to the power of two gives then number of entries.
+ \subsection{SameCacheLine}
+When bringing in data from main memory to a cache a chuck of adjacent data fields is read in to the cache. This is done since the same data (i.e. the contents of a file) are usually stored next to each other in memory making the this chuck of data, called cache line, likely to contain the next data that to be requested. The entire cache Line has the same physical address. SameCacheLine is like ReExecute a primitive policy that can be called a filter. It has an physical memory variable that keeps the previous address so the current one can be check against it for equality. If it's equal it has already been prefetch (if it should given the policy use in combination with SameCacheLine) and does therefore not need to be prefetch again.  
+
+
+\section{Techniques for timeliness} 
+
+\subsection{PCNessaryTimeLines}
+
+Uses two buffers one is the one used in PCNessery and the other keeps track of when to issue the prefetch and is called the Timeliness buffer. The timeliness buffer is implemented in the same way with (an integer between 0 and 3 and the same mapping to the data address  of the store) as the one in PCNessary \fixme.    The second buffer stores information on what type of miss it is a late, data is not ready in L0 when it's needed, in this case the number will be increased by one (if it is not 3). On early miss means that the data have arrived early to  the L0 cache and have been evicted by data that was prefetch later to the same location in the L0 cache. In the same way that an entry in one of their buffer is statically mapped to more then memory addresses a cache have a specific slot for every address and if its take it might (depending on the replacement policy in place) replace the old but not jet used data. An early miss decreases (if it is not 0) the corresponding value in the Timeliness buffer. This is the only policy that does not only try to predict if data should be prefetch or not but also when.  \\ \\
+
+When deciding on if and when to prefetch the first buffer is used in the same way of PCNecessary \fixme to predict if a prefetch should be done or not. If it will be prefetch, the value of the TimeLiness buffer is checked to decide on when. A value below Z means that it will be prefetch later \emph{WHEN??} Different values on Z (2 and 3) are implemented together with different sizes of the two buffers (they have all the same size on there two buffers). The versions are named PCNecessaryTimelinessZ X where X denotes the buffers size in the same way as for PCNecessary. 
+
+
+

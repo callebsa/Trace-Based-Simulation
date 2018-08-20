@@ -20,7 +20,7 @@ well as how they are combined.
 In the image 2.1 \fixme you see the architecture in use. This images symbolizes almost all
 the features and parts of the CPU that will be discussed and analyzed from different
 perspectives. If there is a picture that you should keep in mind when reading this
-report then this would be it. The stars symbolizes whre a prefetch is issued for the
+report then this would be it. The stars symbolizes where a prefetch is issued for the
 three simplest and already implemented store prefetch policies in 2.1.2 \fixme as well as one
 of the proposed once namely NonBSpeculative. The numbers is the one used for the
 simulated CPU (see section 3.3 \fixme). In modern CPU’s there are often more then one
@@ -129,9 +129,9 @@ to all the other cachees at the same time.
 \THsub{State-of-the-art of prefetch policies}{GPP}
 The question for this master thesis is when to prefetch data into the L1 cache to
 minimize the time a store instruction has to wait in the first place of the store buffer.
-Three approaches are already implement in the Gems simulator 2.2.3 \fixme and these will
+Three approaches are already implement in the Gems simulator 2.2.3 \fixme and are covered in the literature,  these will
 be described and their pros and cons while be mentioned below, based on the architecture
-introduced in section 2.1.1. \fixme The starts mentioned in the paragraph headings
+introduced in section 2.1.1. \fixme. These three polices will also be referenced to as "the basic three policies". The starts mentioned in the paragraph headings
 are the once in figure \ref{img:src}
 \THpar{OnExecute (star 1)}{ONEX} This is the earliest and most speculative one, where the
 operation to brought memory into the L1 cache is issued in the execute stage. This
