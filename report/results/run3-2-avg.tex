@@ -1,11 +1,11 @@
 \begin{tabular}{ l|ccc }
  & NoPrefetch & OnExecute & OnCommit\\ \hline
-Store prefetch & 0.0\% & 178.5\% & 100.0\%\\ \hline
+Store prefetch & 0.00\% & 399.72\% & 100.00\%\\ \hline
 \hline
- & OnNonBSpec + reexecute & OnNonBSpec* + sameCL & PCNess 4*\\ \hline
-Store prefetch & 145.6\% & 142.4\% & 125.7\%\\ \hline
+ & OnNonBSpec + Re-Execute & OnNonBSpec* & PCbased 4\\ \hline
+Store prefetch & 336.54\% & 330.52\% & 155.16\%\\ \hline
 \hline
- & PCNess 4* + sameCL & PCNess 8* & PCNess 8* + sameCL\\ \hline
-Store prefetch & 123.4\% & 125.7\% & 123.4\%\\ \hline
+ & PCbased 4* & PCbased 8 & PCbased 8*\\ \hline
+Store prefetch & 151.95\% & 155.16\% & 151.95\%\\ \hline
 \end{tabular}
 

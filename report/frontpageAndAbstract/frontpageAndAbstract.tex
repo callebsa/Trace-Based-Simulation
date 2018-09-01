@@ -26,7 +26,7 @@
 % Set author names, separated by "\\ " (don't forget the space)
 \author{Boström, Carl}
 % Set the date and year - use the right language!
-\date{June 2018}
+\date{September 2018}
 % Only need to set the year if it differs from the current year
 %\year=2016
 
@@ -37,8 +37,8 @@
 \reviewer{Stefanos Kaxiras}
 % På Självständigt arbete i IT är detta BV
 
-\handledare{Alberto Ros Bardisa}
-\examinator{??}
+\handledare{Alberto Ros}
+\examinator{Lars-Åke Nordén}
 % OM NI HAFT EXTERN HANDLEDARE
 %\exthandledare{Håkan Lundmark, Crowderia AB}
 
@@ -67,7 +67,7 @@
 % Change to frontmatter style (e.g. roman page numbers)
 \frontmatter
 \begin{abstract}
-This work will be focusing on how to gain performance when executing programs on a CPU. More specifically the store instructions will be studied. The memory instructions often causes huge delays while waiting on data to be brought in from main memory to the L1 cache. If an out-of-order (OoO) CPU cannot be fed with useful instructions, cycles will be wasted. To try to over overcome this issue, my supervisor, Alberto Ros Bardisa, have come up with the idea to use predictors to try to predict which data to be needed in the feature and brought it in to the L1 cache in advance. This is similar to the branch predictor that has been around for a while, where the CPU is fed with instructions to start working in advance based on the prediction whether or not a branch is to be taken. In this case we guess on which data to be brought in to the L1 case instead of which instructions to be brought in, in advance. Of course you want the prediction to be correct, but even if we assume that it always prefetches useful data there might still be a problem: When to bring in the data? Too late an you still need to wait since the need of it occur before it is in place. Too early and it will be evicted from the L1 cache due to space issues and there will be a waiting time to brought it in again when the need occur. The latest will also be a waste of energy since we brought in something to be evicted before use. The question I will try to answer with this master thesis is when to prefetch data to gain optimal performance. 
+This thesis is focusing on how to gain performance when executing programs on a CPU. More specifically the store instructions are studied. These instructions often cause huge delays while waiting on write permission for a particular data block. If an out-of-order (OoO) CPU fills up the entire store buffer with stores waiting for write permission, the CPU has to stall, and cycles are going to be wast. To over overcome this issue, the idea is to use predictors to try to predict which write permissions that are needed in the future and brought it to the L1 cache in advance. This method is similar to that of the branch predictor where the CPU is fed with instructions to start working in advance based on the prediction of whether or not a branch is to be taken. In this case, we guess which data to be brought in to the L1 case instead of which instructions to be retrieved, in advance. Naturally, you would want the prediction to be correct, but even if we assume that the predictor always grants needed write permission ahead of time there might still be a problem, and that is when to grant store permission for the data block. Too late and you still need to wait since the need for it occurs before it is in place. Too early and it is going to be evicted from the L1 cache due to space issues, and there are going to be an idle time bring it back in when the need occurs. Furthermore, it is also a waste of energy since we brought in something to be evicted before use. The question I aim to answer with this master thesis is when to prefetch data to gain optimal performance. 
 \end{abstract}
 
 

@@ -1,469 +1,103 @@
-@inproceedings{xiong2010ad,
-  title={Ad Hoc Synchronization Considered Harmful.},
-  author={Xiong, Weiwei and Park, Soyeon and Zhang, Jiaqi and Zhou, Yuanyuan and Ma, Zhiqiang},
-  booktitle={OSDI},
-  volume={10},
-  pages={163--176},
-  year={2010}
-}
-
-@inproceedings{ros2012complexity,
-  title={Complexity-effective multicore coherence},
-  author={Ros, Alberto and Kaxiras, Stefanos},
-  booktitle={Proceedings of the 21st international conference on Parallel architectures and compilation techniques},
-  pages={241--252},
-  year={2012},
-  organization={ACM}
-}
-
-@article{o2003hybrid,
-  title={Hybrid dynamic data race detection},
-  author={O'Callahan, Robert and Choi, Jong-Deok},
-  journal={ACM SIGPLAN Notices},
-  volume={38},
-  number={10},
-  pages={167--178},
-  year={2003},
-  publisher={ACM}
-}
-
-@book{gharachorloo1990memory,
-  title={Memory consistency and event ordering in scalable shared-memory multiprocessors},
-  author={Gharachorloo, Kourosh and Lenoski, Daniel and Laudon, James and Gibbons, Phillip and Gupta, Anoop and Hennessy, John},
-  volume={18},
-  number={2SI},
-  year={1990},
-  publisher={ACM}
-}
-
-@article{luk2005pin,
-  title={Pin: building customized program analysis tools with dynamic instrumentation},
-  author={Luk, Chi-Keung and Cohn, Robert and Muth, Robert and Patil, Harish and Klauser, Artur and Lowney, Geoff and Wallace, Steven and Reddi, Vijay Janapa and Hazelwood, Kim},
-  journal={ACM Sigplan Notices},
-  volume={40},
-  number={6},
-  pages={190--200},
-  year={2005},
-  publisher={ACM}
-}
-
-@inproceedings{woo1995splash,
-  title={The SPLASH-2 programs: Characterization and methodological considerations},
-  author={Woo, Steven Cameron and Ohara, Moriyoshi and Torrie, Evan and Singh, Jaswinder Pal and Gupta, Anoop},
-  booktitle={ACM SIGARCH Computer Architecture News},
-  volume={23},
-  number={2},
-  pages={24--36},
-  year={1995},
-  organization={ACM}
-}
-
-@inproceedings{serebryany2009threadsanitizer,
-  title={ThreadSanitizer: data race detection in practice},
-  author={Serebryany, Konstantin and Iskhodzhanov, Timur},
-  booktitle={Proceedings of the Workshop on Binary Instrumentation and Applications},
-  pages={62--71},
-  year={2009},
-  organization={ACM}
-}
-
-@article{lamport1978time,
-  title={Time, clocks, and the ordering of events in a distributed system},
-  author={Lamport, Leslie},
-  journal={Communications of the ACM},
-  volume={21},
-  number={7},
-  pages={558--565},
-  year={1978},
-  publisher={ACM}
-}
-
-@article{barnes1986hierarchical,
-  title={A hierarchical O (N log N) force-calculation algorithm},
-  author={Barnes, Josh and Hut, Piet},
-  year={1986},
-  publisher={Nature Publishing Group}
-}
-
-@incollection{dijkstra2001solution,
-  title={Solution of a problem in concurrent programming control},
-  author={Dijkstra, Edsger W},
-  booktitle={Pioneers and Their Contributions to Software Engineering},
-  pages={289--294},
-  year={2001},
-  publisher={Springer}
-}
-
-@book{dijkstra2002cooperating,
-  title={Cooperating sequential processes},
-  author={Dijkstra, Edsger W},
-  year={2002},
-  publisher={Springer}
-}
-
-@article{courtois1971concurrent,
-  title={Concurrent control with readers and writers},
-  author={Courtois, Pierre-Jacques and Heymans, Frans and Parnas, David Lorge},
-  journal={Communications of the ACM},
-  volume={14},
-  number={10},
-  pages={667--668},
-  year={1971},
-  publisher={ACM}
-}
-
-@inproceedings{Klaftenegger:2014:BAQ:2612669.2612714,
- author = {Klaftenegger, David and Sagonas, Konstantinos and Winblad, Kjell},
- title = {Brief Announcement: Queue Delegation Locking},
- booktitle = {Proceedings of the 26th ACM Symposium on Parallelism in Algorithms and Architectures},
- series = {SPAA '14},
- year = {2014},
- isbn = {978-1-4503-2821-0},
- location = {Prague, Czech Republic},
- pages = {70--72},
- numpages = {3},
- url = {http://doi.acm.org/10.1145/2612669.2612714},
- doi = {10.1145/2612669.2612714},
- acmid = {2612714},
- publisher = {ACM},
- address = {New York, NY, USA},
- keywords = {locking, multi-core, numa, synchronization},
-}
-
-@article{hoare1974monitors,
-  title={Monitors: An operating system structuring concept},
-  author={Hoare, Charles Antony Richard},
-  journal={Communications of the ACM},
-  volume={17},
-  number={10},
-  pages={549--557},
-  year={1974},
-  publisher={ACM}
-}
-
-@inproceedings{yen2007logtm,
-  title={LogTM-SE: Decoupling hardware transactional memory from caches},
-  author={Yen, Luke and Bobba, Jayaram and Marty, Michael R and Moore, Kevin and Volos, Haris and Hill, Mark D and Swift, Michael M and Wood, David A},
-  booktitle={High Performance Computer Architecture, 2007. HPCA 2007. IEEE 13th International Symposium on},
-  pages={261--272},
-  year={2007},
-  organization={IEEE}
-}
-
-@inproceedings{nethercote2007valgrind,
-  title={Valgrind: a framework for heavyweight dynamic binary instrumentation},
-  author={Nethercote, Nicholas and Seward, Julian},
-  booktitle={ACM Sigplan notices},
-  volume={42},
-  number={6},
-  pages={89--100},
-  year={2007},
-  organization={ACM}
-}
-
-@ONLINE{google2013online,
-  author={ThreadSanitizer},
-  title={ThreadSanitizer is a Valgrind-based detector of data races},
-  month=mar,
-  year={2013},
-  url={https://code.google.com/p/data-race-test/wiki/ThreadSanitizer},
-  urldate={2015-02-12}
-}
-
-@ONLINE{google2014online,
-  author={ThreadSanitizer},
-  title={ThreadSanitizer, a data race detector for C/C++ and Go},
-  month=oct,
-  year={2014},
-  url={https://code.google.com/p/thread-sanitizer/wiki/CppManual},
-  urldate={2015-02-12}
-}
-
-@ONLINE{valgrind2014online,
-  author={Valgrind},
-  title={Helgrind: a thread error detector},
-  month=sep,
-  year={2014},
-  url={http://valgrind.org/docs/manual/hg-manual.html},
-  urldate={2015-02-12}
-}
-
-@book{intelsys,
-  author={{Intel Corporation}},
-  title={{Intel\textsuperscript{\textregistered} 64 and IA-32 Architectures Software Developer's Manual}},
-  year={2013},
-  month={June},
-  number={325462-047US},
-}
-
-@InProceedings{aros-parmaditam15,
-  author={Alberto Ros and Stefanos Kaxiras},
-  title={Fast\&Furious: A Tool for Detecting Covert Racing},
-  booktitle={6th Workshop on Parallel Programming and Run-Time Management Techniques for Many-core Architectures (PARMA) and 4th Workshop on Design Tools and Architectures for Multicore Embedded Computing Platforms (DITAM)},
-  pages={},
-  year={2015},
-  month=jan,
-}
-
-@book{ISO:2011:IIIb,
-  added-at={2012-10-08T01:11:26.000+0200},
-  address={Geneva, Switzerland},
-  author={{ISO}},
-  bibdate={Mon Dec 19 11:12:12 2011},
-  bibsource={http://www.math.utah.edu/pub/tex/bib/isostd.bib},
-  biburl={http://www.bibsonomy.org/bibtex/264bc1cf4b2d3d46315a953c6f1688352/gron},
-  day=8,
-  interhash={c06a7dbbcb6724820875e51543282440},
-  intrahash={64bc1cf4b2d3d46315a953c6f1688352},
-  keywords={C Specification Standard},
-  month={December},
-  pages={683 (est.)},
-  publisher={International Organization for Standardization},
-  remark={Revises ISO/IEC 9899:1999, ISO/IEC 9899:1999/Cor
-                 1:2001, ISO/IEC 9899:1999/Cor 2:2004, and ISO/IEC
-                 9899:1999/Cor 3:2007.},
-  timestamp={2012-10-08T01:11:26.000+0200},
-  title={{ISO/IEC 9899:2011 Information technology ---
-                 Programming languages --- C}},
-  url={http://www.iso.org/iso/iso_catalogue/catalogue_tc/catalogue_detail.htm?csnumber=57853},
-  year=2011
-}
-
-@book{ISO:2015:III,
-  address={Geneva, Switzerland},
-  author={{ISO}},
-  month=feb,
-  keywords={C++ Specification Standard},
-  pages={1358 (est.)},
-  publisher={International Organization for Standardization},
-  remark={Revises ISO/IEC 14882:2011.},
-  timestamp={2012-10-08T01:13:47.000+0200},
-  title={{ISO/IEC 14882:2015 Information technology --- Programming languages --- C++}},
-  url={http://www.iso.org/iso/iso_catalogue/catalogue_tc/catalogue_detail.htm?csnumber=64029},
-  year=2015
-}
-
-@book{Gosling:2014:JLS:2636997,
- author={Gosling, James and Joy, Bill and Steele, Guy L. and Bracha, Gilad and Buckley, Alex},
- title={The Java Language Specification, Java SE 8 Edition},
- year={2014},
- isbn={013390069X, 9780133900699},
- edition={1st},
- publisher={Addison-Wesley Professional},
-}
-
-@article{meyers2004c++,
-  title={C++ and the perils of double-checked locking},
-  author={Meyers, Scott and Alexandrescu, Andrei},
-  journal={Doctor Dobb's Journal},
-  year={2004}
-}
-
-@book{Sloss:2004:ASD:983652,
- author={Sloss, Andrew and Symes, Dominic and Wright, Chris},
- title={ARM System Developer's Guide: Designing and Optimizing System Software},
- year={2004},
- isbn={1558608745},
- publisher={Morgan Kaufmann Publishers Inc.},
- address={San Francisco, CA, USA},
-}
-
-@article{carrier1988fast,
-  title={A fast adaptive multipole algorithm for particle simulations},
-  author={Carrier, J and Greengard, Leslie and Rokhlin, Vladimir},
-  journal={SIAM journal on scientific and statistical computing},
-  volume={9},
-  number={4},
-  pages={669--686},
-  year={1988},
-  publisher={SIAM}
-}
-
-@article{sutter2005free,
-  title={The free lunch is over: A fundamental turn toward concurrency in software},
-  author={Sutter, Herb},
-  journal={Dr. Dobb's journal},
-  volume={30},
-  number={3},
-  pages={202--210},
-  year={2005}
-}
-
-@article{papamarcos1984low,
-  title={A low-overhead coherence solution for multiprocessors with private cache memories},
-  author={Papamarcos, Mark S and Patel, Janak H},
-  journal={ACM SIGARCH Computer Architecture News},
-  volume={12},
-  number={3},
-  pages={348--354},
-  year={1984},
-  publisher={ACM}
-}
-
-@inproceedings{kaxiras2012efficient,
-  title={Efficient, snoopless, system-on-chip coherence},
-  author={Kaxiras, Stefanos and Ros, Alberto},
-  booktitle={SOC Conference (SOCC), 2012 IEEE International},
-  pages={230--235},
-  year={2012},
-  organization={IEEE}
-}
-
-@inproceedings{kaxiras2013new,
-  title={A new perspective for efficient virtual-cache coherence},
-  author={Kaxiras, Stefanos and Ros, Alberto},
-  booktitle={ACM SIGARCH Computer Architecture News},
-  volume={41},
-  number={3},
-  pages={535--546},
-  year={2013},
-  organization={ACM}
-}
-
-@inproceedings{ros2012complexity,
-  title={Complexity-effective multicore coherence},
-  author={Ros, Alberto and Kaxiras, Stefanos},
-  booktitle={Proceedings of the 21st international conference on Parallel architectures and compilation techniques},
-  pages={241--252},
-  year={2012},
-  organization={ACM}
-}
-
-@article{lamport1979make,
-  title={How to make a multiprocessor computer that correctly executes multiprocess programs},
-  author={Lamport, Leslie},
-  journal={Computers, IEEE Transactions on},
-  volume={100},
-  number={9},
-  pages={690--691},
-  year={1979},
-  publisher={IEEE}
-}
-
-@book{weaver1994sparc,
-  title={The SPARC architecture manual},
-  author={Weaver, David L},
-  year={1994}
-}
-
-@book{sindhu1992formal,
-  title={Formal specification of memory models},
-  author={Sindhu, Pradeep S and Frailong, Jean-Marc and Cekleov, Michel},
-  year={1992},
-  publisher={Springer}
-}
-
-@incollection{owens2009better,
-  title={A better x86 memory model: x86-TSO},
-  author={Owens, Scott and Sarkar, Susmit and Sewell, Peter},
-  booktitle={Theorem Proving in Higher Order Logics},
-  pages={391--407},
-  year={2009},
-  publisher={Springer}
-}
-
-@article{sewell2010x86,
-  title={x86-TSO: a rigorous and usable programmer's model for x86 multiprocessors},
-  author={Sewell, Peter and Sarkar, Susmit and Owens, Scott and Nardelli, Francesco Zappa and Myreen, Magnus O},
-  journal={Communications of the ACM},
-  volume={53},
-  number={7},
-  pages={89--97},
-  year={2010},
-  publisher={ACM}
-}
-
-@inproceedings{dubois1986memory,
-  title={Memory access buffering in multiprocessors},
-  author={Dubois, Michel and Scheurich, Christoph and Briggs, Fay{\'e}},
-  booktitle={ACM SIGARCH Computer Architecture News},
-  volume={14},
-  number={2},
-  pages={434--442},
-  year={1986},
-  organization={IEEE Computer Society Press}
-}
-
-@book{keleher1992lazy,
-  title={Lazy release consistency for software distributed shared memory},
-  author={Keleher, Pete and Cox, Alan L and Zwaenepoel, Willy},
+@inproceedings{ONEX,
+  title={Two techniques to enhance the
+performance of memory consistency models.},
+  author={K. Gharachorloo and A. Gupta, and J. Hennessy.},
+  booktitle={},
   volume={20},
-  number={2},
-  year={1992},
-  publisher={ACM}
+  pages={355--364},
+  month={Aug},
+  year={1991}
 }
 
-@book{seal2001arm,
-  title={ARM architecture reference manual},
-  author={Seal, David},
-  year={2001},
-  publisher={Pearson Education}
+@inproceedings{ONCO,
+  title={Intel 64 and ia-32 architectures optimization reference manual.},
+  author={Intel}
+
 }
 
-@article{martin2005multifacet,
-  title={Multifacet's general execution-driven multiprocessor simulator (GEMS) toolset},
-  author={Martin, Milo MK and Sorin, Daniel J and Beckmann, Bradford M and Marty, Michael R and Xu, Min and Alameldeen, Alaa R and Moore, Kevin E and Hill, Mark D and Wood, David A},
-  journal={ACM SIGARCH Computer Architecture News},
-  volume={33},
-  number={4},
-  pages={92--99},
-  year={2005},
-  publisher={ACM}
+@inproceedings{gem5,
+  title={The gem5 simulator.},
+  author={N. Binkert and B. Beckmann and G. Black and S. K. Reinhardt and A. Saidi and A. Basu and J. Hes-
+tness and D. R. Hower and T. Krishna and S. Sardashti and R. Sen and K. Sewell and M. Shoaib and
+N. Vaish and M. D. Hill, and D. A. Wood.},
+  booktitle={ACM SIGARCH
+Computer Architecture News.},
+  year={2011}
 }
 
-@inproceedings{agarwal2009garnet,
-  title={GARNET: A detailed on-chip network model inside a full-system simulator},
-  author={Agarwal, Niket and Krishna, Tushar and Peh, Li-Shiuan and Jha, Niraj K},
-  booktitle={Performance Analysis of Systems and Software, 2009. ISPASS 2009. IEEE International Symposium on},
-  pages={33--42},
-  year={2009},
-  organization={IEEE}
+@inproceedings{specCpu,
+  title={Spec cpu  \textcopyright  2006},
+  author={},
+  url ={https://www.spec.org/cpu2006/},
+  note={Updated: 2018-01-09
+taken: 2018-04-04}
+
+
 }
 
-@article{monchiero2009simulate,
-  title={How to simulate 1000 cores},
-  author={Monchiero, Matteo and Ahn, Jung Ho and Falc{\'o}n, Ayose and Ortega, Daniel and Faraboschi, Paolo},
-  journal={ACM SIGARCH Computer Architecture News},
-  volume={37},
-  number={2},
-  pages={10--19},
-  year={2009},
-  publisher={ACM}
+@inproceedings{sniper,
+  title={The sniper multi-core simulator},
+  author={},
+    url ={http://snipersim.org/w/The_Sniper_
+Multi-Core_Simulator},
+  note={Updated: 2017-08-07
+taken: 2018-01-31}  
+
+}
+@inproceedings{cpi,
+  title={Cpi stacks},
+  author={},
+  url ={http://snipersim.org/w/CPI_Stacks},
+  note={Updated: 2018-11-28
+taken: 2018-01-31}
+
 }
 
-@TechReport{cacti09,
-  author = 	 {Naveen Muralimanohar and Rajeev Balasubramonian and Norman P. Jouppi},
-  title = 	 {CACTI 6.0},
-  institution =  {HP Labs},
-  year = 	 {2009},
-  number = 	 {HPL-2009-85},
-  month = 	 apr,
+@book{CPUbook,
+    author    = "Antonio González, Fernando Latorre, and Grigorios Magklis",
+    title     = "Processor Microarchitecture: An Implementation Perspective",
+    publisher = "Morgan \& Claypool",
+    year      = "2011"
+  
 }
 
-@phdthesis{ bienia11benchmarking,
-  author = {Christian Bienia},
-  title = {Benchmarking Modern Multiprocessors},
-  school = {Princeton University},
-  year      = {2011},
-  month     = {January}
+@conference{thePaper,
+    author    = "A. Ros and T. E. Carlson and M. Alipour, and S. Kaxiras",
+    title     = "Non-speculative load-load
+reordering in tso",
+    booktitle = "ISCA",
+    volume   = "17",
+    address  = "Toronto, ON, Canada",
+    year      = "2017",
+    month    = "June 24-28",
+    note     = "Not publicized jet"
 }
-
-@InProceedings{skaxiras-hpdc15,
-  author = 	 {Stefanos Kaxiras and David Klaftenegger and Magnus Norgren and Alberto Ros and Konstantinos Sagonas},
-  title = 	 {Turning Centralized Coherence and Distributed Critical-Section Execution on their Head: A New Approach for Scalable Distributed Shared Memory},
-  booktitle =    {24th International Symposium on High-Performance Parallel and Distributed Computing (HPDC)},
-  pages = 	 {},
-  year = 	 {2015},
-  editor = 	 {},
-  address = 	 {Portland, OR (USA)},
-  month = 	 jun,
-  publisher =    {Association for Computing Machinery (ACM)},
-  ratio-acep =   {16.38% (19/116)},
-  isbn =         {},
-  url =          {}
+@inproceedings{energy,
+  title={An energy an performance exploration of network-on-chip architectures.},
+  author={A. Banerjee and P. T. Wolkotte and R. D. Mullins and S. W. Moore, and G. J. M. Smit},
+  booktitle={Transactions on Very Large Scale Integration (VLSI) Systems},
+  volume={3},
+  issue={17},
+  pages={319--329},
+  year={2009}
 }
-
-@article{nilakantansynchrotrace,
-  title={SynchroTrace: Synchronization-aware Architecture-agnostic Traces for Light-Weight Multicore Simulation},
-  author={Nilakantan, Siddharth and Sangaiah, Karthik and More, Ankit and Salvador, Giordano and Taskin, Baris and Hempstead, Mark}
+@inproceedings{energy2,
+  title={Cacti-p:
+Architecture-level modeling for sram-based structures with advanced leakage re-
+duction techniques},
+  author={S. Li and K. Chen and J. H. Ahn and J. B. Brockman, and N. P. Jouppi},
+  booktitle={In ICCAD: International Conference on Computer-Aided
+Design},
+  pages={964--701},
+  year={2011}
+}
+@inproceedings{snip33er,
+  title={Two techniques to enhance the
+performance of memory consistency models.},
+  author={K. Gharachorloo and A. Gupta, and J. Hennessy.},
+  booktitle={},
+  volume={20},
+  pages={355--364},
+  month={Aug},
+  year={1991}
 }

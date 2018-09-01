@@ -1,86 +1,58 @@
 \chapter{Introduction}
 \label{chap:In}
  \THsec{Motivation}{motivation}
-We are always in the need of faster and smaller computers that burns less energy. In
-the second part of the twentieth century the speed of our CPUs (center process unit)
-were increased by letting them run faster and faster. The problem is that a linear
-frequency speed up causes an exponential growth in energy and heat. A rule of thumb
-is that you will be spending as much energy as needed for the computation to cool the
-circuit. Since we want to make smaller and smaller units, its gets harder and harder
-to cool down. Less materials that are getting warmer will be almost impossible to
-cool down after some limit. But we are on the other hand still developing software
-that requires more and more of the hardware. When we cannot speed up our CPUs
-in the same way as before, we need to see if we can be more effective. Thats when
-CPUs introduced pipelining. Lets say that an instruction take six seconds to compute
-the we and up with two finished instructions after twelve seconds. If we then divided
-the work into three stages where one instruction spends two second each, meaning
-that we can begin working on a new instruction every two seconds. Given this, four
-instruction (twice the amount) will be done in twelve seconds, this results in increasing
-the work that can be done during a period of time without increasing the speed
+We are always in need of faster and smaller computers that burn less energy. In
+the second part of the twentieth century the speed of our CPUs (central processing unit)
+Was increased by letting them run at higher and higher frequencies. The problem is that a linear
+frequency speed-up causes an exponential growth in energy and heat. A rule of thumb
+is that you are spending as much energy as needed for the computation to cool the
+circuit. Since we want to make smaller and smaller units, it gets harder and harder
+to cool the circuits down. However, the software developers still
+require more and more of the hardware. When we cannot speed-up our CPUs
+in the same way as before, we need to see if we can make the CPU more effective. That is why
+CPUs introduced pipelining. Let's say that one instruction takes six seconds to compute
+then we end up with two completed instructions after twelve seconds. If we then divide
+the work into three stages where one instruction spends two seconds in each stage, this means
+that we can begin working on a new instruction every two seconds. Given this improvement, four
+instruction (twice the amount) are complete in twelve seconds. The work that can be done during a period without increasing the speed
 of the CPU and therefore the energy consumption roughly stays the same.
 \\ \\
-Another thing to take advantage of is that computing some instructions especially
-memory instructions (loads and stores) are involving long waiting times. If we then
-instead of just waiting, goes ahead and computes other work, with the next instructions.
-We are not effected by the waiting time in the long run because we are starting
-the computation of the instruction next in line while waiting. This is called out of
-order execution and it is up to the CPU to decide if the work can be done in another
+Another thing to take advantage of is that computing some instructions, especially
+memory instructions (loads and stores) involves long waiting times. If we instead of waiting, go ahead and compute other work, with the next instructions,
+we would not be affected by the waiting time in the long run. Cause we are starting
+the computation of the instruction next in line while waiting. Out of
+order execution is the name of it, and it is up to the CPU to decide if the work can be done in another
 order and still produce the same outcome.
 \\ \\
-We have sad that the computation of memory instructions include waiting on data
-and that we can do useful tasks while waiting. Still it is good if we can decrease the
-waiting time, since we might not always have useful tasks to work on that cover the
-entire waiting time. In this thesis will look if we can shorter the waiting time by
-prefetching the data needed for store instructions in advance. The earlier data is
-prefetch the earlier it will be ready to use. This little pieces in the question of making
-a CPU do more useful work per unit of energy is what this thesis will be about.
-
+We have said that the computation of memory instructions include waiting for store permission
+and that we can do useful tasks while waiting. Still, it is advantageous if we can decrease the
+waiting time since we might not always have useful tasks to work on that cover the
+entire waiting time. This thesis aims to investigate if we can shorten the waiting time by
+prefetching the data needed for store instructions in advance. The earlier data blocks, the earlier it is ready to use. This little pieces in the question of making
+a CPU do more useful work per unit of energy is what this is the aim of this thesis.
  \THsec{Scope}{scope}
-This master thesis will introduce and evaluate three given policies for prefetching data
-for load instruction. There are not much research to be found that are focusing on
-the acceleration of load instructions in particular. The three basic policies will be
-combined in different ways to try to come out with a more optimal policy in terms of
-speed up (number of cycles) and power consumption. A bit of the preparation work
-in terms of manipulating and understanding traces from benchmarks programs will
-be covered as well.
+This master thesis introduces and evaluates the three state-of-the-art policies \ref{subsec:GPP} for prefetching permission
+for the store instruction. There is not much research to be found focusing on
+the acceleration of store instructions in particular. The three state-of-the-art policies (OnExecure, OnCommit, and NoPrefetch) are going to be combined in different ways to try to come out with a more optimal policy concerning
+speed up (number of cycles), number of prefetches, L1 accesses, and power consumption. Furthermore, some of the preparation work
+concerning manipulating and understanding traces from benchmarks programs are covered as well.
  \THsec{Related work}{relWork}
-Below you can read about four related works that have in common that they have all
-used gems 2.2.3. \fixme
-
-\paragraph{No need to squash and re-execute for reordering} Alberto Ros, Trevor E. Carlson,
-Mehdi Alipour and Stefanos Kaxiras, have written the report ”Non-Speculative
-Load-Load Reordering in TSO” [12]\fixme. For decades it has been a fact that if a CPU
-(in a multi core architecture) reorders a load to gain performance then the other
-core must upon observation squashed and re-execute speculative instructions. This
-paper can, for the first time, show that the action is not necessary for total store
-ordering (TSO). The reordering can instead be hidden for the other cores. This allow
-us to commit reordered loads out-of-order without having to wait for the loads to
-become non-speculative or without having to checkpoint committed sate and rollback
-if needed.There solution is cost-effective and increase the performance of out-of-order
-commit by a sizable margin in comparison with the base case where memory operations
-where not allowed to commit if the consistency model cold be violated.
+The related work for this master thesis is covered in subsection~\ref{subsec:GPP} were the state-of-the-art store prefetch policies are described.
 
 
 \THsec{Structure of the report}{structure}
 
-This report consist of seven chapter and one appendix chapter. \fixme 
-\paragraph{Chapter 1 - Introduction} It gives a motivation of the work along with its scope
-and related work.
-\paragraph{Chapter 2 - Background} This chapter is divided into two parts. The first covers
-the architecture and related terms that will be used throughout the report. The first
-part will also cover the three given polices. The second part covers the given softwares
-used and benchmarks.
-\paragraph{Chapter 3 - Setting Up The Testbed} This can be seen as a continuing of the
-second part in chapter 2, here we go through the manipulation of existing tools and
-the creating of new ones. The trace which has manipulated to support the simulation
+This report consists of eight chapters. 
+\paragraph{Chapter \ref{chap:In} - Introduction} This gives a motivation of the work along with its scope. 
+\paragraph{Chapter \ref{chap:bg} - Background} This chapter is divided into two parts. The first part covers
+the used CPU architecture and related terms to be used throughout the report along with introducing the state-of-the-art policies. The second part covers the methodology employed in this thesis.
+\paragraph{Chapter \ref{chap:SettingUpTheTestbed} - Setting Up The Testbed} This chapter can be seen as a continuation of the
+second part in chapter 2. Here we go through the modification of existing simulation tools. The trace employed to connect the simulation infrastructure
 is covered in this chapter.
-\paragraph{Chapter 4 - Proposed Prefetch Policies} This will introduce all prefetch polices
-that is proposed within the work of this thesis. They are all combinations of the basic
-three introduced in the background.
-\paragraph{Chapter 5 - Results} Here you will find graphs comparing the different polices
-with different settings in terms of power, L0 accesses, useful prefetch and energy.
-\paragraph{Chapter 6 - Conclusions} This chapter will try to explain the results and draw
-some conclusions of it.
-\paragraph{Chapter 7 - Discussion} mandatory??
-\paragraph{Chapter A - Implementation details} In this appendix we will cover the key
-parts of the implementation of the new policies in some pseudo code examples.
+\paragraph{Chapter \ref{chap:ProposedPrefetchPolicies} - Proposed Prefetch Policies} This chapter introduces all store prefetch policies
+that are proposed within the work of this thesis.
+\paragraph{Chapter \ref{chap:results} - Results} In this chapter you find graphs comparing the different policies
+with different settings concerning execution times, L1 accesses, useful prefetch, and energy.
+\paragraph{Chapter \ref{chap:discussion} - Discussion} Issues with the set up that can have an impact on the results are represented in this chapter.
+\paragraph{Chapter \ref{chap:conclusion} - Conclusions} This chapter will offer conclusion about the thesis.
+\paragraph{Chapter \ref{chap:fetueredWork} - Future work} This chapter presents ideas on future work that can be built upon the work of this thesis.

@@ -1,28 +1,27 @@
-\newcommand{\resExtime}[0]{\THsub{Execution time}{resCycles} The execution time is mesured in cycles.}
+\newcommand{\resExtime}[0]{\THsub{Execution time}{resCycles} The average execution time is mesured in cycles.}
 
-\newcommand{\resAcc}[0]{\THsub{L0 accsesses}{resAcc} The number of accsesses to cache L0 is mesured here.}
+\newcommand{\resAcc}[0]{\THsub{L1 accsesses}{resAcc} The average number of accsesses to cache L1 is mesured here.}
 
-\newcommand{\resSp}[0]{\THsub{Store prefetches}{resSp} The number of store prefetches is mesured here.} 
+\newcommand{\resSp}[0]{\THsub{Store prefetches}{resSp} The average number of store prefetches is mesured here.} 
 
-\newcommand{\resEnergy}[0]{\THsub{Energy consumtion}{resEnergy} The energy consumtion is here mesured in $nJ$.} 
+\newcommand{\resEnergy}[0]{\THsub{Energy consumtion}{resEnergy} The average energy consumtion is here mesured in $nJ$.} 
 
 
 \newcommand{\avgTable}[4]{
-\begin{figure}[H]
+\begin{table}[H]
 \centering
-\includegraphics[width=13cm]{results/#2.png}
 \input{results/#2}
 \emph{#4}
-\caption{#3}
-\label{img:avg#1}
-\end{figure}
+\caption{Average #3}
+\label{tab:avg#1}
+\end{table}
 }
 
 \newcommand{\fullTable}[3]{
 \begin{figure}[H]
 \centering
 \includegraphics[width=13cm]{results/#2.png}
-\caption{#3}
+\caption{#3 for all benchmarks (in percent weighted against OnCommit)}
 \label{img:full#1}
 \end{figure}
 
@@ -32,25 +31,25 @@
 	\begin{table}[H]
 \centering
 
-\emph{The nunbers are base on a comparation between OnCommit and #4} \\ 
+\emph{The numbers are based on a comparison between OnCommit and #4} \\ 
 \begin{tabular}{ |l|l| }
 \hline
-\multicolumn{2}{|c|}{Top five} \\
+\multicolumn{2}{|c|}{OnCommit better} \\
   \hline
-banchmarch & differance \\ \hline \hline
+benchmarks & differance \\ \hline \hline
 \input{results/#2-top}
 \end{tabular}
 \quad
 \begin{tabular}{ |l|l| }
 \hline
-\multicolumn{2}{|c|}{Bottom five} \\
+\multicolumn{2}{|c|}{#4 better} \\
   \hline
 banchmarch & differance \\ \hline \hline
 \input{results/#2-bottom}
 \end{tabular}
 \\
-\emph{The differance are between the lowest and highest value and are given in procent units.}
-\caption{#3}
+\emph{The difference are between the lowest and highest value and are given in percent units.}
+\caption{The benchmarks that are more affected by #3 (in percentage)}
 \label{top:top#1}
 \end{table}
 
