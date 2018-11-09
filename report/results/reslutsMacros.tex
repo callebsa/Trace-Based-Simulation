@@ -1,10 +1,10 @@
-\newcommand{\resExtime}[0]{\THsub{Execution time}{resCycles} The average execution time is mesured in cycles.}
+\newcommand{\resExtime}[0]{\THsub{Execution time}{resCycles} The average execution time is measured in cycles.}
 
-\newcommand{\resAcc}[0]{\THsub{L1 accsesses}{resAcc} The average number of accsesses to cache L1 is mesured here.}
+\newcommand{\resAcc}[0]{\THsub{L1 accesses}{resAcc} The average number of accesses to cache L1 is measured here.}
 
-\newcommand{\resSp}[0]{\THsub{Store prefetches}{resSp} The average number of store prefetches is mesured here.} 
+\newcommand{\resSp}[0]{\THsub{Store prefetches}{resSp} The average number of store prefetches is measured here.} 
 
-\newcommand{\resEnergy}[0]{\THsub{Energy consumtion}{resEnergy} The average energy consumtion is here mesured in $nJ$.} 
+\newcommand{\resEnergy}[0]{\THsub{Energy consumption}{resEnergy} The average energy consumption is here measured in $nJ$.} 
 
 
 \newcommand{\avgTable}[4]{
@@ -21,7 +21,7 @@
 \begin{figure}[H]
 \centering
 \includegraphics[width=13cm]{results/#2.png}
-\caption{#3 for all benchmarks (in percent weighted against OnCommit)}
+%\caption{#3 for all benchmarks (in percent weighted against OnCommit)}
 \label{img:full#1}
 \end{figure}
 
@@ -44,11 +44,11 @@ benchmarks & differance \\ \hline \hline
 \hline
 \multicolumn{2}{|c|}{#4 better} \\
   \hline
-banchmarch & differance \\ \hline \hline
+benchmarks & differance \\ \hline \hline
 \input{results/#2-bottom}
 \end{tabular}
 \\
-\emph{The difference are between the lowest and highest value and are given in percent units.}
+\emph{The differences between the lowest and highest values given in percent units.}
 \caption{The benchmarks that are more affected by #3 (in percentage)}
 \label{top:top#1}
 \end{table}
@@ -69,7 +69,7 @@ banchmarch & differance \\ \hline \hline
 \end{tabular}
 \end{small}
 \end{adjustwidth}
-\caption{#2}
+%\caption{#2}
 \label{app:#3}
 \end{table}
 }

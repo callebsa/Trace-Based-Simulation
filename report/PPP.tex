@@ -4,13 +4,16 @@ This chapter will introduce the new store prefetch policies proposed by this the
 \\ \\
 From now on the terms policy and filter are used. A policy is a store prefetch policy while a filter is a less complex policy that can more easily be added on top of another policy, which will prevent some prefetches from occurring at all.
 \section{Techniques to reduce speculation effect} 
-This techniques aim to reduce the speculation effect by not prefetching permission to stores that may not be committing or that has already recently been. In the last case, prefetch may not be need since data are likely to still be in L1.
+ These techniques aim to reduce the speculation effect by not prefetching permission
+to stores that may not be committing or has its data already in the L1 cache. If the
+requested permission is still in the L1 cache due to previous instruction there are no
+point in prefetching it again.
 \subsection{OnNonBranchSpecultive}
-If you have a store instruction that follows a branch, it is better to wait until the outcome of the branch is known, to make
-sure that all data we bring in to the L1 cache will be needed. If
-the load is not affected by a branch, we will benefit from the performance by an early prefetch. The difference between OnNonBSpeculative and OnCommit
-is that the prefetch will, if not affected by a branch, be issued upon arriving in the
-ROB. Compare to OnCommit we earn the time the instruction is waiting in the ROB.
+If you have a store instruction that follows a branch, it is better to wait until the outcome of the branch is known, to make sure that all data brought in to the L1
+cache will be needed. If the load is not affected by a branch, there will be a benefit
+for the performance by an early prefetch. The difference between OnNonBSpeculative and OnCommit
+is that the prefetch will, if not affected by a branch, be issued upon arriving in the ROB. Compare to OnCommit the time the instruction is waiting in
+the ROB will be earned.
 \subsection{Re-Execute}
 Re-Execute is not a fully prefetch policy. It is more of a question on how to handle Re-Execution of an instruction. 
  Reasons for Re-Execution can
@@ -20,20 +23,39 @@ is updated by the previous store. Another reason can be that the load in questio
 a previously not resolved load. If the load is invalidated or evicted from the cache,
 then the load (and all the next instructions) have to be Re-Executed.
 \\ \\
-Here a comparison is made between issue a prefetch on ReExececution
-or not. If the Re-Execution takes place close in time to the first execution, then the data
+A comparison can be made between issue a prefetch on ReExececution or not. If the Re-Execution takes place close in time to the first execution, then the data
 for that store is likely to be in L1 and/or in another cache, hence prefetching again
-is not necessary and thereby just a waste of energy.
+is not necessary and thereby just a waste of energy. Re-Execute is considered to be a filter.
 \section{Techniques to filter unnecessary prefetches}
-Here the memory address of the store is evaluated. What are our experience from handling stores from this address previously, were their a need of prefetch or not? Another thing to be considered is if the data is sharing a cache line with data that has already been prefetched. Since the entire cache line is always prefetched. 
- \subsection{SamecacheeLine}
-When retrieving data from main memory to a cache, a chunk of adjacent fields is read into the cache. The reason for this is since the same data (i.e., the contents of a file) is usually stored next to each other in memory, making this chunk of data (called cache line) more likely to contain the next data that will be requested. The entire cache line has the same physical address. SameCacheLine is like Re-Execute a primitive policy that can be called a filter. It has a register that keeps the previous address so that the current one can be checked against it for equality. If there is an equality and it has already been prefetch (given it should according to the policy used in combination with SameCacheLine) it, therefore, does not need to be prefetch again.  
- \subsection{PCbasedPredictor}
-The idea pf PCbasedPredictor comes from branch prediction, which given the previous observations on whether a branch is taken or not predicts if it is going to be taken or not. The prediction is based on information on the target PC (the address of the target instruction), and whether or not branches to this instruction are usually taken or not. If it is likely that a branch is to be taken, then the predictor predicts that it is going to be taken this time as well and the CPU is fed whit instructions from the target of the branch. If it is predicted that a branch is not to be taken the CPU gets the instructions that come after the branch. \\ \\
-PCbasedPredictor keeps track of the memory addresses of the store instructions instead. PCbasedPredictor uses a buffer (as you soon will see different buffer sizes have been tested) in which each entry map to a number of memory addresses. The more entries, the fewer addresses map to it. The rest you get when dividing the address (interpreted as a number) with the number of entries in the index to the buffer. That means that two adjacent memory addresses maps to different entries.\\ \\
+ Here the memory address of the store is evaluated. What is the experience from handling stores to this address previously, was there a need to prefetch or not? Another
+thing to be considered is, if the data is sharing a cache line with data that has already
+been prefetched there is no need to prefetch it again. Since the entire cache line is
+always prefetched.
+ \subsection{SameCacheLine}
+When retrieving data from the main memory to a cache, a chunk of adjacent fields is
+read into the cache. The reason for this is since the same data (i.e., the contents of a
+file) is usually stored next to each other in memory, making this chunk of data (called
+cache line) more likely to contain the next data that will be requested as well. The
+entire cache line has the same physical address. SameCacheLine is like Re-Execute a
+primitive policy that can be called a filter. It has a register that keeps the previous
+address so that the current one can be checked against it for equality. If there is an
+equality and it has already prefetched it, given it should be prefetched according to
+the policy used in combination with SameCacheLine, therefore, does not need to be
+prefetched again. 
+\subsection{PCbasedPredictor}
+The idea of PCbasedPredictor comes from branch prediction, which given the previous observations on whether or not a branch is taken which predicts if it is needs to
+be taken. The prediction is based on information on the target PC (the address of
+the target instruction), and whether or not branches to this instruction are usually
+taken. If it is likely that a branch will be taken, then the predictor predicts that it
+is going to be taken this time as well and the CPU is fed with instructions from the
+target of the branch. If it is predicted that a branch is wont be taken the CPU gets the instructions that come after the branch. \\ \\
+PCbasedPredictor keeps track of the memory addresses of the store instructions instead. PCbasedPredictor uses a buffer (as you soon will see different buffer sizes have been tested) in which each entry map to a number of memory addresses. The more entries, the fewer addresses map to each. The rest you get when dividing the address
+(interpreted as a number) with the number of entries, is the index representing that
+address. That means that two adjacent memory addresses maps to different entries.\\ \\
 
 
-Every entry contains an integer that can take values between 0 and 3 and is preset to 2. If seeing a store to a memory address that maps to an entry with a number greater than one, the data will be prefetch. If a store instruction hits in the L1 cache (the data was already there) the number in the corresponding buffer entry is (if it is not 0) decreased by one, making it less likely to be prefetch next time. If a store misses in the L1 cache (the data is not yet there), the number in the corresponding buffer entry is (if it is not 3) increased by one, making it more likely to be prefetch next time. \\ \\
+Every entry contains an integer that can take values between 0 and 3 and is preset to 2. If seeing a store to a memory address that maps to an entry with a number greater than one, the data will be prefetched. If a store instruction hits in the L1
+cache (the data was already there) the number in the corresponding buffer entry is (if it is not 0) decreased by one, making it less likely to be prefetched next time. If a store misses in the L1 cache (the data is not yet there), the number in the corresponding buffer entry is (if it is not 3) increased by one, making it more likely to be prefetched next time. \\ \\
 
 
 To evaluate the impact of the buffer size, different sizes were tested and named PCNecessery X, where X to the power of two gives the number of entries.
@@ -41,12 +63,35 @@ To evaluate the impact of the buffer size, different sizes were tested and named
 
 
 \section{Techniques to adapt to timeliness} 
-Techniques for timeliness focus not on if, but when to prefetch. An early prefetch might be evicted other prefetch but not yet used data due to space issues. To avoid this issues, the prefetch can be delayed, so the data to be evicted can be used before eviction. 
-\subsection{PCbasedTimeLinessPredictor}
+Techniques for timeliness focus not on if, but when to prefetch. An early prefetch might be evicted by other prefetch but not yet used data due to space issues. To
+avoid this issues, the prefetch can be delayed, so the data to be evicted can be used
+before eviction.
+\subsection{PCbasedTimelinessPredictor}
 
-PCbasedTimeLinessPredictor uses two buffers, where one of the buffers is the one used in PCbasedPredictor and the other keeps track of when to issue the prefetch, this is called the Timeliness buffer. The Timeliness buffer is implemented in the same way (with an integer between 0 and 3 and the same mapping to the data address of the store) as the one in PCbasedPredictor. The second buffer stores information on what type of miss it is. A late miss means that data is not ready in L1 when it's needed, in this case, the number is increased by one (if it is not 3). An early miss means that the data has arrived early to the L1 cache and has been evicted by data that was prefetched later to the same location in the L1 cache. In the same way that an entry in one of their buffer is statically mapped to more than a memory addresses a cache has a limited number of slots for every address. If all the places are taken, it might (depending on the replacement policy in place) replace the old but not yet used data. An early miss decreases (if it is not 0) the corresponding value in the Timeliness buffer. This policy is the only one that does not only try to predict if data should be prefetched or not but also when.  \\ \\
-
-When deciding on if and when to prefetch, the first buffer is used in the same way as PCbasedPredictor to predict if a prefetch should be done or not. If it will be prefetch, the value of the Timeliness buffer is checked to decide on when. A value below Z means that it will be prefetch later, like OnCommit. A value above or equal to Z will cause a later prefetch, like  OnNonBranchSpecultive. Different values on Z (2 and 3) are implemented together with different sizes of the two buffers (they have all the same size on their two buffers). The versions are named PCbasedTimeLinessPredictorZ X where X denotes the size of the buffers in the same way as for PCbasedPredictor. 
+PCbasedTimelinessPredictor uses two buffers, where one of the buffers is the one used
+in PCbasedPredictor and the other keeps track of when to issue the prefetch, this is
+called the Timeliness buffer. The Timeliness buffer is implemented in the same way
+(with an integer between 0 and 3 and the same mapping to the data address of the
+store) as the one in PCbasedPredictor. The second buffer stores information on what
+type of miss it is. A late miss means that data permission is not granted in L1 when
+it is needed, in this case, the number is increased by one (if it is not 3). An early miss
+means that the permission was granted early to the L1 cache and has been evicted by
+a data block that was prefetched later to the same location in the L1 cache. In the
+same way that an entry in one of the buffers is statically mapped to more than one
+memory address, a cache has a limited number of slots for every address range, the
+number of ways. If all the places are taken, it might (depending on the replacement
+policy in place) replace the old but not yet used data. An early miss decreases (if it
+is not 0) the corresponding value in the Timeliness buffer. This policy is the only one
+that does not only try to predict if data should be prefetched or not but also when.
+\\ \\
+When deciding if and when to prefetch, the first buffer is used in the same way as
+PCbasedPredictor to predict if a prefetch should be done or not. If it will be a prefetch,
+the value of the Timeliness buffer is checked to decide on when. A value below Z
+means that it will be prefetched later, like OnCommit. A value above or equal to Z
+will cause a later prefetch, like OnNonBranchSpecultive. Different values on Z (2 and
+3) are implemented together with different sizes of the two buffers (they have all the
+same size on the two buffers). The versions are named PCbasedTimelinessPredictorZ
+X where X denotes the size of the buffers in the same way as for PCbasedPredictor.
 
 \section{General remarks}
 Each new policy and filter can be built on top of each other to gain better performance. In the result (chapter \ref{chap:results}) you can see how filters and policies have been used on top of each other.

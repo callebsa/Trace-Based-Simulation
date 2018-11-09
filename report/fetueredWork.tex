@@ -1,12 +1,21 @@
 \chapter{Future Work}
 \label{chap:fetueredWork}
 
-\section{Bigger traces} The traces used in this thesis contain one million instructions (were nine hundred thousand ware measured) from the execution of each benchmark. To confirm that the results are indeed as stated in this thesis, all simulations should be done once again but with larger traces. The time and the computer resources were not available to conduct it for this thesis.
-
-\section{Are all filters necessary?} When studying the results closer one can see that adding the same filter, i.e., Re-Execute on top of two different store prefetch policies, one can see that the difference it does to the execution time and the energy consumption is not the same. This study tells us that the same store operation can be predicted not to be executed and therefore not prefetched by to components of a store prefetch policy. Since a good policy has been build upon to make it even better, we could have ended up with a too complicated policy. Therefore it can be good to take, i.e., PCNessaryTimLiness3 8 with Re-Execute and SameCacheLine and see if parts of the policy can be removed without adverse effects on the execution time and energy. 
-
-\section{Considering the warmup} In this thesis we have not taken the first one hundred thousand instructions into account. I think that one can lock into if we can implement a store prefetch policy that identifies if the execution is in the warmup phase or not and act differently depending on that. It is desirable to come up with a store prefetch policy that benefits the entire execution.
-
-\section{More filters and policies} In this thesis some filters and policies have been developed that seems to have decreased both execution time and energy consumption which is good of cause but can it be improved further? Nothing is telling us that it cannot be improved further.
-
-
+\section{Bigger traces}
+The traces used in this thesis contain one million instructions (where nine hundred
+thousand was measured) from the execution of each benchmark. To confirm that the
+results are indeed as stated in this thesis, all simulations should be done once again
+but with larger traces. The time and the computer resources were not available to
+conduct it for this thesis.
+\section{Are all filters necessary?}
+When studying the results closer one can see that adding the same filter, i.e., ReExecute on top of two different store prefetch policies, the difference it does to the
+execution time and the energy consumption is not the same. This study tells us
+that the same store operation can be predicted not to be executed and therefore
+not prefetched by two components of a store prefetch policy. Since a good policy
+has been built upon to make it even better, we could have ended up with a too
+complicated policy. Therefore it can be good to take, i.e., PCNessaryTimLiness3 8
+with Re-Execute and SameCacheLine and see if parts of the policy can be removed
+without adverse effects on the execution time and energy.
+\section{More filters and policies}
+In this thesis some filters and policies have been developed that seems to have decreased both execution time and energy consumption which is good of course but can
+it be improved further? Nothing is telling us that it cannot be improved further

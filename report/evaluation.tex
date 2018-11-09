@@ -1,8 +1,12 @@
 \chapter{Setting Up The Testbed}
 \label{chap:SettingUpTheTestbed} 
 \THsec{Changes to Sniper}{chSniper}
-In this chapter, we will focus more on the traces, the interface between Sniper and GEMS simulators.
-Traces are simply a list of the CPU instructions that will be simulated, a subject that will be covered more in section \ref{sec:trace} Sniper produce the trace which in turn will be used by GEMS. Some minor updates have been done to the parts of Sniper that print the trace:
+ In this chapter, there will more focus on the traces, the interface between Sniper
+and GEMS simulators. Traces are simply a list of the CPU instructions that will be
+simulated, a subject that will be covered more in section \ref{sec:trace}. Sniper produce the
+trace which in turn will be used by GEMS. Some minor updates have been done to
+the parts of Sniper that print the trace:
+
 \begin{itemize}
 \item Writing the start PC (program counter) at first line in the trace.
 \item Writing the length of the previous instruction to gather with every instruction.
@@ -15,16 +19,17 @@ integer, which leaves a line with just a ”C” after n lines of instructions.
 Configuration is a list of keys with assigned values that sets out the characteristics
 for the CPU to be simulated. Some examples can be the number and sizes of
 caches, the sizes of buffers, number of cores, frequency and a lot more. The PROCESSOR
-STORE PREFETCH key is the one used to set the prefetch policy. Another
-key to keeping track of is SIMULATION BENCHMARK which holds the name of the
-simulation benchmark program so that it can be added to the stats-file (see \ref{subsec:GEMs} ). Between
-the different simulations, only the values of the two described keys are changed,
-the rest remains the same and sets out the architecture of the CPU which will be described in
-the following subsection.
+STORE PREFETCH key is the one used to set the store prefetch policy. Another
+key to keeping track of is SIMULATION BENCHMARK which holds the name of
+the simulation benchmark program so that it can be added to the stats-file (see
+\ref{subsec:GEMs}). Between the different simulations, only the values of the two described keys
+are changed, the rest remains the same and sets out the architecture of the CPU
+which will be described in the following subsection.
+
 \newpage
 \THsec{CPU architecture}{arc}
 The CPU design simulated for this master thesis (the numbers introduced in figure
-\ref{img:arc} ) are listed in the table below and are used in similar researches \cite{thePaper}. 
+\ref{img:arc}) are listed in the table below and are used in similar researches \cite{thePaper}. 
 
 \begin{table}[H]
 
@@ -108,10 +113,11 @@ bytes from memory address ee7e220}
   \caption{Trace example: Anonymous instructions and a Load}
 \end{figure}
 
-The 0 and the 4 denotes two anonymous instructions (we care more about loads,
-stores and branches). Since the first digit denotes the size of the previous instruction, we know that the two anonymous instructions both have the size of four (the ”4” after
-the first space and the ”4” after the ”L”). The ”L” tells us that the instruction is
-a load instruction and we load from the hexadecimal memory address ee7e220. The
+The 0 and the 4 denotes two anonymous instructions (loads, stores and branches
+are of greater interest). Since the first digit denotes the size of the previous instruction,
+it shows that the two anonymous instructions both have the size of four (the ”4” after
+the first space and the ”4” after the ”L”). The ”L” tells us that the instruction is a
+load instruction and loads data from the hexadecimal memory address ee7e220. The
 number of bytes to be loaded is written after the last space, in this case, four.
 
 \begin{figure}[h]
@@ -119,8 +125,7 @@ number of bytes to be loaded is written after the last space, in this case, four
 0d1d3 b4d1t99* S99 7fff8368acd8 8
 \end{lstlisting}
 \centering
-\emph{An anonymous instruction of size 4, that is dependent on the first and the third instruction before this. This instruction is followed by a taken branch to PC+99 ahead with
-a dependency on the prior instruction where we a store of 8 bytes to the address
+\emph{An anonymous instruction of size 4, that is dependent on the first and the third instruction before this. This instruction is followed by a taken branch to PC+99 ahead with a dependency on the prior instruction. Last is a store of 8 bytes to the address
 7fff8368acd8.}
   \caption{Trace example: Branch and store}
 \end{figure}
@@ -128,8 +133,7 @@ a dependency on the prior instruction where we a store of 8 bytes to the address
 Given the previous examples, this line starts with one anonymous instruction of
 size four. In this case, the first instructions are also dependent on the results from the
 two previous instructions, and this is denoted by the two ”d” before the first space. The
-digit after each ”d” points out how many instructions there are before the dependent one are,
-ín this case one and three. The next instruction starts with a ”b” which tells us that it is a
+digit after each ”d” points out how many instructions there are before the dependent one are, in this case one and three. The next instruction starts with a ”b” which tells us that it is a
 branch. The branch is dependent on the instruction before, the anonymous one that
 was discussed at the beginning of this example. The ”t” denotes the branch target
 which afterward is defined as the difference between the current PC and the target address. Here 99 should be added to the PC if taken. The ”*” denotes that the branch is taken. After
@@ -149,12 +153,12 @@ address 7fff8368acd8.}
   \caption{Trace example: Branch to a previous instruction}
 \end{figure}
 
-In this example, we only have two new things to cover. The ”m” denotes a memory dependency, some data that
-are to be loaded in the third previous instruction. These ”d's” depend on
-data to be computed by the instruction in question while the ”m's” are data that
-need to be loaded into the CPU. The next thing to cover is that we here have a
-negative PC difference for the target address. We have all knowledge to directly
-translate the line into English: An anonymous instruction of size 4 that is dependent on
+ In this example, there is only have two new things to cover. The ”m” denotes a
+memory dependency, some data that are to be loaded in the third previous instruction.
+These ”d’s” depend on data to be computed by the instruction in question while the
+”m’s” are data that need to be loaded into the CPU. The next thing to cover is that
+there is a negative PC difference for the target address. This is all required knowledge
+to directly translate the line into English: An anonymous instruction of size 4 that is dependent on
 data from memory, retrieved in the third prior instruction. After that, there
 is a branch with a negative PC difference (-166) as the target which leads to a load
 of 8 bytes from the address 7fff8368acd8.
@@ -163,8 +167,8 @@ of 8 bytes from the address 7fff8368acd8.
 During this thesis, a python script was written to automatizes the run of the simulation
 on every subfolder in a predefined folder (all subfolders have to contain traces
 from a benchmark program). In the source code, there is a predefined array with the
-names of the prefetch policies you want to run. The script will then run GEMS on
-every trace with every store prefetch policy and name the stat-file in the following
+ names of the store prefetch policies you want to run. The script will then run GEMS
+on every trace with every store prefetch policy and name the stat-file in the following
 way: [name on benchmark] [name on store prefetch policy].stats
  \\ \\
 The script will also generate the results by reading some values from every stats file,
@@ -182,13 +186,13 @@ $$\frac{\sum \frac{policy}{OnCommit}}{NumberOfBenchmarks}$$
 Table \ref{tab:energy} lists the energy consumption of accessing our three caches and the network
 flits which are the energy needed for transmission of one data unit between caches and
 the pipeline. One flits for transmission of control messages and five for data \cite{thePaper}
-To retrieve the energy consumption of the caches we use the CACTI-P tool \cite{energy2} . The energy consumption of the caches is used to
-estimate the power consumption of the different caches structures, assuming an 22 nm
+To retrieve the energy consumption of the caches we use the CACTI-P tool \cite{energy2}. The energy consumption of the caches is used to
+estimate the energy consumption of the different caches structures, assuming an 22 nm
 technology node. To estimate the dynamic energy consumption of the interconnection
 network, we assume that it is proportional to the data transferred \cite{energy} and that each
 flit transmitted through the network consumes the same amount of energy as reading
 one word from an L1 cache each time that it crosses a link (link and router energy).
-These number are used by the python script \ref{sec:meEval} to generate the power graphs that can be seen in the results chapter \ref{chap:results}.
+These number are used by the python script \ref{sec:meEval} to generate the energy graphs that can be seen in the results chapter \ref{chap:results}.
 \begin{table}[h]
     \begin{centering}
         \begin{tabular}{ |c|c| }

@@ -2,9 +2,19 @@
 \label{chap:discussion}
 
 \section{Energy calculations }
- The calculation of energy consumption has been implemented during the work with this thesis \ref{subsec:energy}. It is computed based on the network flits as well as the number of accesses to the caches. The problem, however, is that by implementing more and more advanced prefetch policies more logic gates are added, and this burns energy. I have discussed the issue of adding new buffers that will be read and written many times during the execution, as for PCNecessary and PCNecessaryTimliness, with my supervisor. We believe that this unmeasured consumption is little in comparison with the values that are being measured. This consumption is something to keep in mind while comparing more or less complicated policies. 
+ The calculation of energy consumption has been implemented during the work with this thesis \ref{subsec:energy}. It is computed based on the number of network flits as well as the
+number of accesses to the caches. The problem, however, is that by implementing
+more and more advanced prefetch policies more logic gates are added, and this burns
+energy. I have discussed the issue of adding new buffers that will be read and written
+to many times during the execution, as for PCNecessary and PCNecessaryTimliness,
+with my supervisor. We believe that this unmeasured consumption is little in comparison with the values that are being measured. This consumption is something to
+keep in mind while comparing more or less complicated policies.
 
 \section{Simulation debugging and correctness check }
- All filters and policies apart from the three state-of-art once and OnNonBSpec was implemented within this thesis. The way it was done was based by on an idea about how more unwanted prefetches can be excluded from the wanted ones. When we had an idea about the theoretical impact of a new policy, it was implemented and tested. The results were then compared with our expectations and if their results somewhat matched, let us say the new policy was getting a lower execution time then an old policy, we were satisfied with it. If there were no match, we thought about the theoretical impact again and conducted tests on very short handmade traces so that the simulation could be monitored manually step by step to understand why the results did not match our expectations.
+All filters and policies apart from the three state-of-art ones and OnNonBSpec were
+implemented within this thesis. The way it was done was based on an idea about
+how more unwanted prefetches can be excluded from the wanted ones. When I had an idea about the theoretical impact of a new policy, it was implemented and tested. The results were then compared with my expectations and if their results somewhat matched, let us say the new policy was getting a lower execution time then an old policy, I was satisfied with it. If there were no match, I thought about the theoretical
+impact again and conducted tests on very short handmade traces so that the simulation could be monitored manually step by step to understand why the results did
+not match my expectations.
  \\ \\
-Regarding this approach, I can see two risks. The first is if we have a wrong theory, then a correct (or more correct) implementation might be changed for a more faulty one to match the wrong theory. The second is if given a correct theory there might still be bugs causing the values to be wrong but without being noticed since it points in the same direction as the theory. The new policy has a shorter execution time compared to old policies however it might be even shorter or not that much shorter.
+Regarding this approach, I can see two risks. The first is if I have a wrong theory, then a correct (or more correct) implementation might be changed for a more faulty one to match the wrong theory. The second is if given a correct theory there might still be bugs causing the values to be wrong but without being noticed since it points in the same direction as my theory. The new policy has a shorter execution time compared to old policies however it might be even shorter or not that much shorter.
