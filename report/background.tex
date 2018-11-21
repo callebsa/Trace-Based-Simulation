@@ -15,24 +15,23 @@ well as how they are combined.
 \caption{Our architecture}
 \label{img:arc}
 \end{figure}
-The image \ref{img:arc} shows architecture in use. This image symbolizes almost all
+Figure \ref{img:arc} shows architecture in use. This image displays almost all f
 the features and parts of the CPU that are going to be discussed and analyzed from different
-perspectives. If there is a picture that you should keep in mind when reading
-this report, this would be it. The stars symbolize where a prefetch is issued for the three state-of-the-art store prefetch policies evaluated in this thesis (section \ref{subsec:GPP}). The structure is the one used for the simulated CPU (see section \ref{sec:arc}). In modern CPU’s there is often more than one core which all have a processor pipeline with several stages. The pipeline is split into stages to increase the throughput of executed instructions. One can compare it with a car factory where the cars travel on a conveyor belt through different stations and
+perspectives in this thesis. The stars symbolize where a prefetch is issued for the three state-of-the-art store prefetch policies evaluated in this thesis (section \ref{subsec:GPP}). The structure is the one used for the simulated CPU (see section \ref{sec:arc}). In modern CPUs, there is often more than one core; all cores have a processor pipeline with several stages. The pipeline is split into stages to increase the throughput of executed instructions. One can compare it with a car factory where the cars travel on a conveyor belt through different stations and
 at each station, something is installed within the car, i.e., seats, wheels or the engine.
 \\ \\
-The simulated CPU has a seven stage pipeline (for simplicity Decode and Allocation is here combined). Some key parts of the CPU are introduced while covering these stages. One thing to mention before moving
+The simulated CPU has a seven stage pipeline (for simplicity, Decode and Allocation are here combined). In the following section some key parts of the CPU are introduced while covering these stages. One thing to mention before moving
 on is that the CPU executes instructions out of order but with the promise that the effect
-is always like as if the instruction executed in order.
+is always the same as if the instructions had been executed in order.
  \\ \\
 
 \THstage{Fetch}
- A new instruction (see \ref{sec:trace}) is added to the processor. In the most common case the next instruction is brought in from the \THnewWord{I-cache} (Instruction cache). I-cache is a \THnewWord{cache} that holds the instructions to be executed shortly, caches will covered in \ref{subsubsec:memcache}. The CPU has a \THnewWord{PC} (program counter) which keeps track of the address of the current instruction fetched. When fetching the next instruction, the PC increments by the length of the current instruction. Different loops are used in programming, and a loop tells us if we should go back to the beginning of the loop body or if the loop should terminate and the lines below it should execute. A CPU cannot, for example, execute C code directly, it needs to compile first. A compilation is a translation from code to instructions within the instructions set (see \ref{sec:trace}) that are supported by the CPU in question. A loop is compiled to a branch instruction which has a target instruction
+ In this stage, a new instruction (see \ref{sec:trace}) is added to the processor. In the most common case, the next instruction is brought in from the \THnewWord{I-cache} (Instruction cache). An I-cache is a \THnewWord{cache} that holds the instructions to be executed shortly (caches will be covered in \ref{subsubsec:memcache}). The CPU has a \THnewWord{PC} (program counter) which keeps track of the address of the current instruction that has been fetched. When fetching the next instruction, the PC increments by the length of the current instruction. Different loops are used in programming, and a loop determinate if there should be a jump back to the beginning of the loop body or if the loop should terminate and the lines below it should execute. A CPU cannot, for example, execute C code directly; it needs to be compiled first. A compilation is a translation from code to instructions within the instruction set (see \ref{sec:trace}) that is supported by the CPU in question. A loop is compiled to a branch instruction which has a target instruction
 address
 and the condition to be satisfied if the branch is taken (take one more lap in the
-loop). The problem is that we want to continue to bring in new instructions before
-the condition is computed, but which instructions are next? Here
-the \THnewWord{Branch predictor} come to use since it predicts the outcome of a branch and makes the CPU able to load instructions based on that prediction. If a branch is predicted to be taken the PC is set to the branch target address. If a prediction turns out to be wrong, the CPU has to remove the work and all the side effects produced by the wrongly executed instructions. Fetched instructions are placed in the Fetch queue (FQ) (our has 60 entries).
+loop). In order to not stall the CPU, it need to be continue to bring in new instructions before
+the condition is computed. The question to ask is which instructions to be brought in. Here
+the \THnewWord{Branch predictor} is used to predicted the outcome of a branch and enables the CPU to load instructions based on that prediction. If a branch is predicted to be taken, the PC is set to the branch target address. If a prediction turns out to be wrong, the CPU has to remove the work and all of the side effects produced by the wrongly executed instructions. Fetched instructions are placed in the Fetch queue (FQ) (our has 60 entries).
 \THstage{Decode (and Allocation)}
  The instruction (from the instruction queue) will be interpreted here. In the Allocation phase recurses, like entries in the: Issue queue (IQ), Reorder buffer (ROB), and Store buffer (SB) are received~\cite{CPUbook}. The two later buffers are introduced later on.
 \THstage{Dispatch}
@@ -47,9 +46,9 @@ with 192 entries, with some of the previous stages. This buffer puts the out-of-
 order. Given the size of the ROB, it is possible to execute up to 191 instructions ahead while waiting for an instruction to finish. When 
  all instructions in a sequence are done, they can leave the pipeline. The {\color{red}x} in figure
 \ref{img:arc} illustrates a squashed instruction. If a branch prediction turns out to be wrong,
-then we need to squash all the instructions that should never have been executed but
-have been based on that incorrect prediction.
-
+then all the instructions that should never have been executed but
+have been based on that incorrect prediction has to be squashed.
+\\ \\
  When the addition, with the sum of two number multiplied by a third number, is
  done and the result is added to the ROB, the multiplication instruction in the IQ
 (Instruction Queue) gets informed that its dependent instruction is done (the arrow
@@ -60,7 +59,7 @@ result from the addition to the multiplication.
  Every instruction takes the path that has been described until now, the path described from beyond this point are only taken by the store instructions. When a store instruction leaves the ROB, it goes to the \THnewWord{store buffer} (also called store queue). The store instruction is now represented by the memory address to be fetched and the data to be stored. The buffer is FIFO-ordered (first in, first out), this means that the first store in the buffer waits for its data to be ready in the L1 cache (see \ref{subsec:TA}) and blocks all stores behind it in the buffer. The store buffer interacts only with the L1 cache.
 
 \THsubsub{Memory and caches}{memcache}
-The memory structure (in the bottom of figure \ref{img:arc}) is an essential part when talking about store instructions. Beginning with the main memory that has a storage capacity of some gigabytes, a latency of 160 cycles if a hit, and is located on the motherboard. A cache is a quick and small memory unit that are placed on the CPU chip, in which the data that is likely to be used soon is placed. In this case, we have three caches which are named L1 (32kiB 8-way 4 hit cycles), L2 (128kiB 8-way 12 hit cycles) and L3 (1MB per bank 8-way 35 hit cycles). L stands for level, and the higher the digit, the bigger the cache is and the further away from the core it is located. A bigger cache means that it takes a longer time to find specific data in it. The time is measured in \THnewWord{cycles}, and in every cycle, something can occur in the CPU, i.e., an instruction can be placed in FQ and/or another one can be placed in the ROB. 
+The memory structure (in the bottom of figure \ref{img:arc}) is an essential part when talking about store instructions. Beginning with the main memory that has a storage capacity of some gigabytes, a latency of 160 cycles if a hit, and is located on the motherboard. A cache is a quick and small memory unit that are placed on the CPU chip, in which the data that is likely to be used soon is placed. In this architecture, there are three caches which are named L1 (32kiB 8-way 4 hit cycles), L2 (128kiB 8-way 12 hit cycles) and L3 (1MB per bank 8-way 35 hit cycles). L stands for level, and the higher the digit, the bigger the cache is and the further away from the core it is located. A bigger cache means that it takes a longer time to find specific data in it. The time is measured in \THnewWord{cycles}, and in every cycle, something can occur in the CPU, i.e., an instruction can be placed in FQ and/or another one can be placed in the ROB. 
 
 If our CPU runs in a frequency of 2.2 GHz, there are:
 
@@ -93,7 +92,8 @@ mentioned in the paragraph headings are the ones in figure \ref{img:arc}.
 prefetch policy, where the operation to bring data with store permission into the
 L1 cache is issued within the execute stage. It ensures that the data arrives in L1
 before it is needed, i.e., its instruction in at the head of the store buffer. The downside
-is that several events which impact on the data to be prefetched can occur. First, if
+is that several events which impact on the data to be prefetched can occur:
+\\\\ First, if
 the store instruction is affected by a branch, that branch can be mispredicted which
 means that energy and space is wasted in the small L1 cache by bringing in unneeded
 data. Bringing in data to a cache can cause eviction of other data. When a store
@@ -102,7 +102,7 @@ from the L1 cache it has to wait for the data to be brought to the L1 again. It 
 take less time since the data can be left in the L2 cache and be brought from it instead
 of the main memory.
 \\ \\
-Given that the prediction is correct there might still be in trouble since when the
+Second, given that the prediction is correct there might still be in trouble since when the
 prefetch is issued, the instruction has to finish the pipeline and passes through the queue in the buffer. This process might
 take a long time. During this time the data can have arrived in the L1 cache and been
 evicted due to lack of space. This lack of space is due to more data have been prefetched from the point in
@@ -126,6 +126,7 @@ instruction retirement.”. ”Reading for ownership” is the same as prefetch 
 permissions and ”instruction retirement” is another name for instruction commit. To
 conclude, OnCommit is the one in the middle between the two extremes, OnExecute
 (star 1) and NoPrefetch (star 3).
+
 \THpar{NoPrefetch (star 3)}{NOPF} NoPrefetch does no prefetch, the data will be brought into
 the L1 cache when the instruction is in the head of the store buffer. All permission
 granted will be needed and not evicted before use. This wastes no energy by bringing
@@ -138,7 +139,7 @@ trade-off. Upon analyzing the source code of Gem5 \cite{gem5} it was discovered 
 
 
 \THsec{Simulation infrastructure}{siminf}
-Here the tools that have been used for this thesis are covered. The tools that have been modified or created within the work of this master thesis
+Here are the tools that have been used for this thesis covered. The tools that have been modified or created within the work of this master thesis
 are to be found in chapter \ref{chap:SettingUpTheTestbed}.
 \THsub{Benchmarks}{benchmarks}
 To examine how a CPU behaves and how a certain store prefetch policy will work
@@ -152,8 +153,8 @@ that describes the architecture to simulate, and a command line with the call to
 the application which we want to simulate, for example, one of the programs in 2.2.1.
 Sniper can then produce graphs and other documents that describe and measure the
 simulation of the chosen program on the chosen CPU configuration. Two examples
-of plots that can be generated are CPI stacks \cite{cpi} and energy stack (bar diagrams with one bar per thread in the program). These bars are divided into different regions
-based on the percentages of time or energy spent in that region. The region can be:
+of plots that can be generated are CPI stacks \cite{cpi} and energy stack; bar diagrams with one bar per thread in the program. These bars are divided into different regions
+based on the percentages of time or energy spent in that region. The regions can be:
 Ifetch, mem-l1, mem-l2 or branch.
 \THsub{GEMS}{GEMs}
 The Wisconsin Multifacet Project at the University of Wisconsin has released a General
@@ -166,7 +167,7 @@ during this thesis (see \ref{sec:chSniper}). Support for the policies to be prop
 implemented based on the received source code. 
 GEMS was modified to take a path
 to a folder containing traces (like in \ref{sec:trace}), an array of configuration settings (see \ref{sec:conf} and \ref{sec:ThB}) and a path for writing the output stats-file. A stats-file consists of around
-2000 lines and is divided into two parts: A configuration part where you find the
+two thousand lines and is divided into two parts: A configuration part where you find the
 information given to GEMS in the configuration array and a Stats part with many
 measurements like the number of cycles and the number of accesses to the caches.
 

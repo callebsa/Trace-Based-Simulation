@@ -3,19 +3,18 @@
 
 \section{Bigger traces}
 The traces used in this thesis contain one million instructions (where nine hundred
-thousand was measured) from the execution of each benchmark. To confirm that the
+thousand were measured) from the execution of each benchmark. To confirm that the
 results are indeed as stated in this thesis, all simulations should be done once again
 but with larger traces. The time and the computer resources were not available to
-conduct it for this thesis.
+conduct such simulations for this thesis.
 \section{Are all filters necessary?}
-When studying the results closer one can see that adding the same filter, i.e., ReExecute on top of two different store prefetch policies, the difference it does to the
-execution time and the energy consumption is not the same. This study tells us
+Adding the same filter, i.e., ReExecute on top of two different store prefetch policies, makes a difference to the
+execution time, and the energy consumption is not the same. This study shows
 that the same store operation can be predicted not to be executed and therefore
 not prefetched by two components of a store prefetch policy. Since a good policy
-has been built upon to make it even better, we could have ended up with a too
-complicated policy. Therefore it can be good to take, i.e., PCNessaryTimLiness3 8
+has been built upon to make it even better, this could have resulted in an overly
+complicated policy. Therefore, it might be good to take, for example, PCNessaryTimLiness3 8
 with Re-Execute and SameCacheLine and see if parts of the policy can be removed
 without adverse effects on the execution time and energy.
 \section{More filters and policies}
-In this thesis some filters and policies have been developed that seems to have decreased both execution time and energy consumption which is good of course but can
-it be improved further? Nothing is telling us that it cannot be improved further
+In this thesis, some filters and policies have been developed that seems to have decreased both execution time and energy consumption. But it might still be possible to improve it even further.

@@ -9,7 +9,7 @@ to stores that may not be committing or has its data already in the L1 cache. If
 requested permission is still in the L1 cache due to previous instruction there are no
 point in prefetching it again.
 \subsection{OnNonBranchSpecultive}
-If you have a store instruction that follows a branch, it is better to wait until the outcome of the branch is known, to make sure that all data brought in to the L1
+If a store instruction follows a branch, it is better to wait until the outcome of the branch is known, to make sure that all data brought in to the L1
 cache will be needed. If the load is not affected by a branch, there will be a benefit
 for the performance by an early prefetch. The difference between OnNonBSpeculative and OnCommit
 is that the prefetch will, if not affected by a branch, be issued upon arriving in the ROB. Compare to OnCommit the time the instruction is waiting in
@@ -23,11 +23,11 @@ is updated by the previous store. Another reason can be that the load in questio
 a previously not resolved load. If the load is invalidated or evicted from the cache,
 then the load (and all the next instructions) have to be Re-Executed.
 \\ \\
-A comparison can be made between issue a prefetch on ReExececution or not. If the Re-Execution takes place close in time to the first execution, then the data
+A comparison can be made between issue a prefetch on Re-Execution or not. If the Re-Execution takes place close in time to the first execution, then the data
 for that store is likely to be in L1 and/or in another cache, hence prefetching again
 is not necessary and thereby just a waste of energy. Re-Execute is considered to be a filter.
 \section{Techniques to filter unnecessary prefetches}
- Here the memory address of the store is evaluated. What is the experience from handling stores to this address previously, was there a need to prefetch or not? Another
+ Here the memory address of the store is evaluated. The prefetch will occur given that there are a need for that base on experience from handling stores to this address previously. Another
 thing to be considered is, if the data is sharing a cache line with data that has already
 been prefetched there is no need to prefetch it again. Since the entire cache line is
 always prefetched.
@@ -49,7 +49,7 @@ the target instruction), and whether or not branches to this instruction are usu
 taken. If it is likely that a branch will be taken, then the predictor predicts that it
 is going to be taken this time as well and the CPU is fed with instructions from the
 target of the branch. If it is predicted that a branch is wont be taken the CPU gets the instructions that come after the branch. \\ \\
-PCbasedPredictor keeps track of the memory addresses of the store instructions instead. PCbasedPredictor uses a buffer (as you soon will see different buffer sizes have been tested) in which each entry map to a number of memory addresses. The more entries, the fewer addresses map to each. The rest you get when dividing the address
+PCbasedPredictor keeps track of the memory addresses of the store instructions instead. PCbasedPredictor uses a buffer in which each entry map to a number of memory addresses. The more entries, the fewer addresses map to each. The rest you get when dividing the address
 (interpreted as a number) with the number of entries, is the index representing that
 address. That means that two adjacent memory addresses maps to different entries.\\ \\
 
@@ -58,12 +58,12 @@ Every entry contains an integer that can take values between 0 and 3 and is pres
 cache (the data was already there) the number in the corresponding buffer entry is (if it is not 0) decreased by one, making it less likely to be prefetched next time. If a store misses in the L1 cache (the data is not yet there), the number in the corresponding buffer entry is (if it is not 3) increased by one, making it more likely to be prefetched next time. \\ \\
 
 
-To evaluate the impact of the buffer size, different sizes were tested and named PCNecessery X, where X to the power of two gives the number of entries.
+To evaluate the impact of the buffer size, different sizes were tested and named PCBased X, where X to the power of two gives the number of entries.
 
 
 
 \section{Techniques to adapt to timeliness} 
-Techniques for timeliness focus not on if, but when to prefetch. An early prefetch might be evicted by other prefetch but not yet used data due to space issues. To
+Techniques for timeliness focus not on if, but when to prefetch. An early, not yet used, prefetch might be evicted by other an prefetch due to space issues. To
 avoid this issues, the prefetch can be delayed, so the data to be evicted can be used
 before eviction.
 \subsection{PCbasedTimelinessPredictor}
@@ -72,7 +72,7 @@ PCbasedTimelinessPredictor uses two buffers, where one of the buffers is the one
 in PCbasedPredictor and the other keeps track of when to issue the prefetch, this is
 called the Timeliness buffer. The Timeliness buffer is implemented in the same way
 (with an integer between 0 and 3 and the same mapping to the data address of the
-store) as the one in PCbasedPredictor. The second buffer stores information on what
+store) as the one in PCbasedPredictor. The TimeLiness buffer stores information on what
 type of miss it is. A late miss means that data permission is not granted in L1 when
 it is needed, in this case, the number is increased by one (if it is not 3). An early miss
 means that the permission was granted early to the L1 cache and has been evicted by
@@ -88,7 +88,7 @@ When deciding if and when to prefetch, the first buffer is used in the same way 
 PCbasedPredictor to predict if a prefetch should be done or not. If it will be a prefetch,
 the value of the Timeliness buffer is checked to decide on when. A value below Z
 means that it will be prefetched later, like OnCommit. A value above or equal to Z
-will cause a later prefetch, like OnNonBranchSpecultive. Different values on Z (2 and
+will cause an earlier prefetch, like OnNonBranchSpecultive. Different values on Z (2 and
 3) are implemented together with different sizes of the two buffers (they have all the
 same size on the two buffers). The versions are named PCbasedTimelinessPredictorZ
 X where X denotes the size of the buffers in the same way as for PCbasedPredictor.

@@ -1,27 +1,25 @@
 \chapter{Introduction}
 \label{chap:In}
  \THsec{Motivation}{motivation}
-We are always in need of faster and smaller computers that burn less energy. In
-the second part of the twentieth century the speed of our CPUs (central processing unit)
-was increased by letting them run at higher and higher frequencies. The problem is that a linear
-frequency speed-up causes an exponential growth in energy and heat. A rule of thumb
+We are always in need of faster and smaller computers that burn less energy. Over
+the second half of the twentieth century, the speed of our CPUs (central processing units)
+was increased by letting them run at higher and higher frequencies. However, a linear
+frequency speed-up causes an exponential increase in energy and heat. In fact, a rule of thumb
 is that you are spending as much energy as needed for the computation to cool the
-circuit. Since we want to make smaller and smaller units, it gets harder and harder
-to cool the circuits down. However, the software developers still
-require more and more of the hardware. When we cannot speed-up our CPUs
-in the same way as before, we need to see if we can make the CPU more effective. That is why
-CPUs introduced pipelining. Let's say that one instruction takes six seconds to compute, then we end up with two completed instructions after twelve seconds. If we then divide
-the work into three stages where one instruction spends two seconds in each stage, this means
-that we can begin working on a new instruction every two  seconds. Given this improvement, four instructions are completed in twelve seconds.
-Twice the amount of work that can be done during a period without increasing the speed
-of the CPU and therefore the energy consumption roughly stays the same.
+circuit. Since it has become desirable to make smaller and smaller units, it becomes harder and harder
+to cool the circuits down. However, software developers still
+require more and more of the hardware. When CPUs cannot speed-up
+in the same way as before, the CPUs needs to become more effective. That is why
+pipelining was introduced into the CPUs. For example, if one instruction takes six seconds to compute, then two instructions will be completed after twelve seconds. If the work were to be divided into three stages where one instruction spends two seconds in each stage, the CPU can then begin working on a new instruction every two seconds. Given this improvement, four instructions are completed in twelve seconds.
+Twice the amount of work can be done during a period without increasing the speed
+of the CPU and therefore the energy consumption roughly remains the same.
 \\ \\
-Another thing to take advantage of is that computing some instructions, especially
-memory instructions (loads and stores) involves long waiting times. If we instead of waiting, go ahead and compute other work with the next instructions, we would not be affected by the waiting time in the long run. Because we are starting the computation of the instructions next in line while waiting, this is called out of order execution. It is up to the CPU to decide if the work can be done in another order and still produce the same outcome. 
+Another opportunity to take advantage of is that computing some instructions, especially
+memory instructions (loads and stores) involves long waiting times. If, instead of waiting, other work is computed with the next instructions, one are not affected by the waiting time ultimately. Because the computation of the instructions next in line is started while waiting, this is called out of order execution. It is up to the CPU to decide if the work can be done in another order and still produce the same outcome. 
 \\ \\
-We have said that the computation of memory instructions include waiting for write permission and that we can do useful tasks while waiting. Still, it is advantageous if we can decrease the waiting time since we might not always have useful tasks to work on that covers the entire waiting time. This thesis aims to investigate if we can shorten the waiting time by prefetching the data needed for store instructions in advance. The earlier a data permission is granted, the earlier it is ready to use.
+Like mentioned above computation of memory instructions includes waiting for write permission and that useful tasks can be done while waiting. Still, it is advantageous to decrease the waiting time since there might not always be useful tasks to work on that cover the entire waiting time. This thesis aims to investigate whether we can shorten the waiting time by prefetching the data needed for store instructions in advance. The earlier a data permission is granted, the earlier it is ready to use.
  \THsec{Scope}{scope}
-This master thesis introduces and evaluates the three state-of-the-art policies (see \ref{subsec:GPP}) for prefetching permission for the store instruction. There is not much research to be found focusing on the acceleration of store instructions in particular. The three state-of-the-art policies (OnExecure, OnCommit, and NoPrefetch) are going to be combined in different ways to try to come out with a more optimal policy concerning speed up (number of cycles), number of prefetches, L1 accesses, and power consumption. Furthermore, some of the preparation work concerning editing and understanding traces from benchmarks programs are covered as well. 
+This master thesis introduces and evaluates the three state-of-the-art policies (see \ref{subsec:GPP}) for prefetching permission for the store instruction. There has not been much research focusing on the acceleration of store instructions in particular. The three state-of-the-art policies (OnExecure, OnCommit, and NoPrefetch) are going to be combined in different ways to try to come up with a more optimal policy concerning speed up (number of cycles), number of prefetches, L1 accesses, and power consumption. Furthermore, some of the preparation work concerning editing and understanding traces from benchmark programs are covered as well. 
  \THsec{Related work}{relWork}
 The related work for this master thesis is covered in subsection~\ref{subsec:GPP} were the state-of-the-art store prefetch policies are described. 
 
@@ -36,7 +34,7 @@ the used CPU architecture and related terms to be used throughout the report alo
 second part in chapter \ref{chap:bg}.  Here the modification of existing simulation tools are covered. The trace employed to connect the simulation infrastructure is covered in this chapter.
 \paragraph{Chapter \ref{chap:ProposedPrefetchPolicies} - Proposed Store Prefetch Policies} This chapter introduces all store
  prefetch policies that are proposed within the work of this thesis.
-\paragraph{Chapter \ref{chap:results} - Results} In this chapter you will find graphs comparing the different
+\paragraph{Chapter \ref{chap:results} - Results} In this chapter includes graphs comparing the different
  policies with different settings concerning execution times, L1 accesses, useful prefetch, and energy.
 \paragraph{Chapter \ref{chap:discussion} - Discussion} Issues with the set up that can have an impact on the results are covered in this chapter.
 \paragraph{Chapter \ref{chap:conclusion} - Conclusions} This chapter will offer conclusions about the state-of-the-art and proposed store prefetch policies.

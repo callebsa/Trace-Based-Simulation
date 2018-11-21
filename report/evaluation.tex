@@ -9,7 +9,7 @@ the parts of Sniper that print the trace:
 
 \begin{itemize}
 \item Writing the start PC (program counter) at first line in the trace.
-\item Writing the length of the previous instruction to gather with every instruction.
+\item Writing the length (PC difference) of the previous instruction to gather with every instruction.
 \item Prints the target PC of a branch together with a ”*” if the branch is taken.
 \item Implementing a new flag,\emph{ –insert-clear-stat-by-icount=n}, where n is a positive
 integer, which leaves a line with just a ”C” after n lines of instructions.    
@@ -82,7 +82,7 @@ instruction telling the CPU if it should jump back to the beginning of the loop 
 continue below it. When compiling a C or Java file, you end up with a binary file
 that contains the translation from the source code to a particular instruction set. This file
 is the one you use to run the application in question. A trace file is a human-readable
-”binary file.”
+”binary file”.
 \\\\
 PC stands for program counter, and it keeps track of which instruction in a program
 to be executed next. When taking a branch, the CPU changes the PC to the address of the target instructions from a branch and continue forward.
@@ -96,7 +96,7 @@ explained and translated into English.
 4030fc
 \end{lstlisting}
 \centering
- \emph{The first line of a trace is the starting PC}
+ \emph{The first line of a trace contains the starting PC}
   \caption{Trace example: Starting PC}
 \end{figure}
 
@@ -116,7 +116,7 @@ bytes from memory address ee7e220}
 The 0 and the 4 denotes two anonymous instructions (loads, stores and branches
 are of greater interest). Since the first digit denotes the size of the previous instruction,
 it shows that the two anonymous instructions both have the size of four (the ”4” after
-the first space and the ”4” after the ”L”). The ”L” tells us that the instruction is a
+the first space and the ”4” after the ”L”). The ”L” means that the instruction is a
 load instruction and loads data from the hexadecimal memory address ee7e220. The
 number of bytes to be loaded is written after the last space, in this case, four.
 
@@ -125,19 +125,19 @@ number of bytes to be loaded is written after the last space, in this case, four
 0d1d3 b4d1t99* S99 7fff8368acd8 8
 \end{lstlisting}
 \centering
-\emph{An anonymous instruction of size 4, that is dependent on the first and the third instruction before this. This instruction is followed by a taken branch to PC+99 ahead with a dependency on the prior instruction. Last is a store of 8 bytes to the address
+\emph{An anonymous instruction of size 4, that is dependent on the first and the third instruction before this. This instruction is followed by a taken branch to PC+99 with a dependency on the prior instruction. Last is a store of 8 bytes to the address
 7fff8368acd8.}
   \caption{Trace example: Branch and store}
 \end{figure}
 
-Given the previous examples, this line starts with one anonymous instruction of
+As explained in the previous examples, this line starts with one anonymous instruction of
 size four. In this case, the first instructions are also dependent on the results from the
 two previous instructions, and this is denoted by the two ”d” before the first space. The
-digit after each ”d” points out how many instructions there are before the dependent one are, in this case one and three. The next instruction starts with a ”b” which tells us that it is a
+digit after each ”d” points out how many instructions before the dependent one are, in this case one and three. The next instruction starts with a ”b” which means that it is a
 branch. The branch is dependent on the instruction before, the anonymous one that
 was discussed at the beginning of this example. The ”t” denotes the branch target
 which afterward is defined as the difference between the current PC and the target address. Here 99 should be added to the PC if taken. The ”*” denotes that the branch is taken. After
-that, there is an ”S,” namely a store instruction. Here one can once again see that the
+that, there is an ”S”, namely a store instruction. Here one can once again see that the
 branch is taken since the difference from the branch instruction is 99 (directly after
 the ”S”) as the branch target. A store interaction follows the same pattern as a load,
 here it stores 8 bytes to the memory address 7fff8368acd8.
@@ -148,14 +148,14 @@ here it stores 8 bytes to the memory address 7fff8368acd8.
 \end{lstlisting}
 \centering
 \emph{An anonymous instruction of size 4 that is dependent on data from memory that is retrieved in the third prior instruction. After that, there is a branch with a
-negative PC difference (-166), like the target, which leads to a load of 8 bytes to the
+negative PC difference (-166), as the target, which leads to a load of 8 bytes to the
 address 7fff8368acd8.}
   \caption{Trace example: Branch to a previous instruction}
 \end{figure}
 
  In this example, there is only have two new things to cover. The ”m” denotes a
-memory dependency, some data that are to be loaded in the third previous instruction.
-These ”d’s” depend on data to be computed by the instruction in question while the
+memory dependency; data that are to be loaded in the third previous instruction.
+The ”d’s” are depend on data to be computed by the instruction in question while the
 ”m’s” are data that need to be loaded into the CPU. The next thing to cover is that
 there is a negative PC difference for the target address. This is all required knowledge
 to directly translate the line into English: An anonymous instruction of size 4 that is dependent on
@@ -175,7 +175,7 @@ The script will also generate the results by reading some values from every stat
 the values to be read are hard-coded into an array. After collecting all these
 values from every file, the values from all benchmarks for every store policy will be
 summed. The values for OnCommit will be set to 100\%, and the others will get their
-percentages based on that. These percentages will then be plotted into bar charts and written into tables (which
+percentages based on that. These percentages will then be written into tables (which
 can be found in the results).
 \\\\
 The average results that you will see in the result chapter \ref{chap:results} is calculated in the following way:
@@ -184,10 +184,10 @@ $$\frac{\sum \frac{policy}{OnCommit}}{NumberOfBenchmarks}$$
 
 \THsub{Energy graphs}{energy}
 Table \ref{tab:energy} lists the energy consumption of accessing our three caches and the network
-flits which are the energy needed for transmission of one data unit between caches and
-the pipeline. One flits for transmission of control messages and five for data \cite{thePaper}
+flits; the energy needed for transmission of one data unit between caches and
+the pipeline. One flits for transmission of control messages and five for data \cite{thePaper}.
 To retrieve the energy consumption of the caches we use the CACTI-P tool \cite{energy2}. The energy consumption of the caches is used to
-estimate the energy consumption of the different caches structures, assuming an 22 nm
+estimate the energy consumption of the different cache structures, assuming an 22 nm
 technology node. To estimate the dynamic energy consumption of the interconnection
 network, we assume that it is proportional to the data transferred \cite{energy} and that each
 flit transmitted through the network consumes the same amount of energy as reading
